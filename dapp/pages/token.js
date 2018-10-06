@@ -1,27 +1,5 @@
 import Layout from '../components/layout';
 
-const CURRENT_SELL_ORDER_PROPOSER = '0x12345';
-
-const CURRENT_SELL_ORDER_PRICE = '111 ETH';
-
-const CAP_TABLE = [
-  ['0x12345', '45%', 'Approved'],
-  ['0x22345', '30%', 'Rejected'],
-  ['0x32345', '25%', ''],
-];
-
-const BUY_ORDERS = [
-  ['0x9876', 2500],
-  ['0x9876', 500],
-  ['0x9876', 10],
-];
-
-const TOKEN_NAME = 'CryptoTulip';
-
-const TOKEN_ID = '12345';
-
-const HIGHEST_BID = 1828;
-
 export default class extends React.Component {
   static async getInitialProps({ query }) {
     return {
@@ -30,6 +8,37 @@ export default class extends React.Component {
       tokenImageExt: query.ext,
     };
   }
+
+  state = {
+    currentSellOrderProposer: '',
+    currentSellOrderPrice: '',
+    capTable: [],
+    buyOrders: [],
+    tokenName: '',
+    tokenId: '',
+    highestBid: '',
+  };
+
+  componentDidMount() {
+    this.setState({
+      currentSellOrderProposer: '0x12345',
+      currentSellOrderPrice: '111 ETH',
+      capTable: [
+        ['0x12345', '45%', 'Approved'],
+        ['0x22345', '30%', 'Rejected'],
+        ['0x32345', '25%', ''],
+      ],
+      buyOrders: [
+        ['0x9876', 2500],
+        ['0x9876', 500],
+        ['0x9876', 10],
+      ],
+      tokenName: 'CryptoTulip',
+      tokenId: '12345',
+      highestBid: 1828,
+    });
+  }
+
 
   render () {
     return (
@@ -42,15 +51,15 @@ export default class extends React.Component {
 
             <br />
 
-            {TOKEN_NAME}<br />
-            #{TOKEN_ID}<br />
+            {this.state.tokenName}<br />
+            #{this.state.tokenId}<br />
             <br />
             Highest Bid<br />
-            {HIGHEST_BID} ETH
+            {this.state.highestBid} ETH
           </div>
           <div className="col s4">
             <h5>Current Active Sell Order</h5>
-            <h6>{CURRENT_SELL_ORDER_PROPOSER} proposed to sell this asset for {CURRENT_SELL_ORDER_PRICE}</h6>
+            <h6>{this.state.currentSellOrderProposer} proposed to sell this asset for {this.state.currentSellOrderPrice}</h6>
 
             <hr />
 
@@ -66,7 +75,7 @@ export default class extends React.Component {
               </thead>
 
               <tbody>
-                {CAP_TABLE.map((tr) =>
+                {this.state.capTable.map((tr) =>
                   <tr>
                     <td>{tr[0]}</td>
                     <td>{tr[1]}</td>
@@ -102,7 +111,7 @@ export default class extends React.Component {
               </thead>
 
               <tbody>
-                {BUY_ORDERS.map((tr) =>
+                {this.state.buyOrders.map((tr) =>
                   <tr>
                     <td>{tr[0]}</td>
                     <td>{tr[1]} ETH</td>
