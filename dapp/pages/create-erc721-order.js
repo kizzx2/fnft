@@ -49,9 +49,11 @@ export default class extends React.Component {
 
     const addresses = await web3Wrapper.getAvailableAddressesAsync();
     const maker = addresses[0]
-    // const taker = "0xc9019f438626fa0538c4339d1306b9300f2de18e" //set taker hardcoded for now. need to update with contract address
+
+    const taker = maker //set taker hardcoded for now. need to update with contract address
     console.log(addresses)
     const etherTokenAddress = contractWrappers.etherToken.getContractAddressIfExists();
+    console.log(etherTokenAddress)
     const DECIMALS = 18;
     const makerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
     const takerAssetData = assetDataUtils.encodeERC721AssetData(erc721Address, new BigNumber(tokenId));
@@ -73,19 +75,19 @@ export default class extends React.Component {
     //   );
     // await web3Wrapper.awaitTransactionSuccessAsync(takerErc721ApprovalTxHash);
     // Allow the 0x ERC20 Proxy to move WETH on behalf of maker
-    // const makerWETHApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
-    //   etherTokenAddress,
-    //   maker,
-    //   );
-    // await web3Wrapper.awaitTransactionSuccessAsync(makerWETHApprovalTxHash);
-
-    // Convert ETH into WETH for maker by depositing ETH into the WETH contract
-    const makerWETHDepositTxHash = await contractWrappers.etherToken.depositAsync(
+    const makerWETHApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
       etherTokenAddress,
-      makerAssetAmount,
       maker,
       );
-    await web3Wrapper.awaitTransactionSuccessAsync(makerWETHDepositTxHash);
+    await web3Wrapper.awaitTransactionSuccessAsync(makerWETHApprovalTxHash);
+
+    // Convert ETH into WETH for maker by depositing ETH into the WETH contract
+    // const makerWETHDepositTxHash = await contractWrappers.etherToken.depositAsync(
+    //   etherTokenAddress,
+    //   makerAssetAmount,
+    //   maker,
+    //   );
+    // await web3Wrapper.awaitTransactionSuccessAsync(makerWETHDepositTxHash);
 
     //generate order, hardcoded some values right now
     const exchangeAddress = contractWrappers.exchange.getContractAddress();
@@ -108,7 +110,7 @@ export default class extends React.Component {
     const orderHashHex = orderHashUtils.getOrderHashHex(order);
     const signature = await signatureUtils.ecSignOrderHashAsync(web3.currentProvider, orderHashHex, maker, SignerType.Metamask);
     const signedOrder = { ...order, signature };
-    // await contractWrappers.exchange.validateFillOrderThrowIfInvalidAsync(signedOrder, takerAssetAmount, taker);
+    await contractWrappers.exchange.validateFillOrderThrowIfInvalidAsync(signedOrder, takerAssetAmount, taker);
     console.log(signedOrder)
     const JSONSignedOrder = JSON.stringify(signedOrder)
     window.localStorage.setItem("signedOrder", JSONSignedOrder)

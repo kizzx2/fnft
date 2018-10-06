@@ -1,4 +1,16 @@
 import Layout from '../components/layout';
+import { getWeb3 } from '../components/web3-utils';
+import {
+    assetDataUtils,
+    BigNumber,
+    ContractWrappers,
+    generatePseudoRandomSalt,
+    Order,
+    orderHashUtils,
+    signatureUtils,
+    SignerType,
+} from '0x.js';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
 export default class extends React.Component {
   static async getInitialProps({ query }) {
@@ -17,9 +29,12 @@ export default class extends React.Component {
     tokenName: '',
     tokenId: '',
     highestBid: '',
+    web3: {},
+    contractWrappers: {},
+    web3Wrapper: {}
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     this.setState({
       currentSellOrderProposer: '0x12345',
       currentSellOrderPrice: '111 ETH',
@@ -37,46 +52,63 @@ export default class extends React.Component {
       tokenId: '12345',
       highestBid: 1828,
     });
+
+    const web3 = await getWeb3()
+
+    const contractWrappers = new ContractWrappers(web3.currentProvider, { networkId: 3 });
+    const web3Wrapper = new Web3Wrapper(web3.currentProvider);
+
+    console.log(contractWrappers,web3Wrapper)
+
+    this.setState({
+      web3,
+      contractWrappers,
+      web3Wrapper
+    })
   }
 
   handleFillOrder = async (address,tokenId) => {
+    const {web3Wrapper, contractWrappers} = this.state
     const JSONSignedOrder = window.localStorage.getItem("signedOrder")
     const [taker] = await web3Wrapper.getAvailableAddressesAsync();
     const parsed = JSON.parse(JSONSignedOrder)
-    const signedOrder = parsed
-    // const order = {
-    //   exchangeAddress: exchangeAddress,
-    //   expirationTimeSeconds: new BigNumber(Math.floor(Date.now()/1000) + expiration),
-    //   feeRecipientAddress: "0x0000000000000000000000000000000000000000",
-    //   makerAddress: maker,
-    //   makerAssetAmount: makerAssetAmount,
-    //   makerAssetData: makerAssetData,
-    //   makerFee: new BigNumber(0),
-    //   salt: new BigNumber(Date.now()),
-    //   senderAddress: "0x0000000000000000000000000000000000000000",
-    //   takerAddress: "0x0000000000000000000000000000000000000000",
-    //   takerAssetAmount: takerAssetAmount,
-    //   takerAssetData: takerAssetData,
-    //   takerFee: new BigNumber(0),
-    // }
+    const signedOrder = {
+      exchangeAddress: parsed.exchangeAddress,
+      expirationTimeSeconds: new BigNumber(parsed.expirationTimeSeconds),
+      feeRecipientAddress: parsed.feeRecipientAddress,
+      makerAddress: parsed.makerAddress,
+      makerAssetAmount: new BigNumber(parsed.makerAssetAmount),
+      makerAssetData: parsed.makerAssetData,
+      makerFee: new BigNumber(parsed.makerFee),
+      salt: new BigNumber(parsed.salt),
+      senderAddress: parsed.senderAddress,
+      takerAddress: parsed.takerAddress,
+      takerAssetAmount: new BigNumber(parsed.takerAssetAmount),
+      takerAssetData: parsed.takerAssetData,
+      takerFee: new BigNumber(parsed.takerFee),
+      signature: parsed.signature
+    }
 
-    //allow 0x ERC721 proxy to move the NFT on behalf of taker
+    console.log(signedOrder, taker)
+
+    // allow 0x ERC721 proxy to move the NFT on behalf of taker
     const takerErc721ApprovalTxHash = await contractWrappers.erc721Token.setProxyApprovalForAllAsync(
       address,
       taker,
       true,
       {
         from: taker,
-        gasLimit: 2000000,
+        gasLimit: 5000000,
         gasPrice: new BigNumber(8000000000)
       }
       );
     await web3Wrapper.awaitTransactionSuccessAsync(takerErc721ApprovalTxHash);
 
-    await contractWrappers.exchange.validateFillOrderThrowIfInvalidAsync(signedOrder, takerAssetAmount, taker);
+    await contractWrappers.exchange.validateFillOrderThrowIfInvalidAsync(signedOrder, signedOrder.takerAssetAmount, taker);
 
-    const txHash = await contractWrappers.exchange.fillOrderAsync(signedOrder, takerAssetAmount, taker, {
-      gasLimit: 4000000,
+    const txHash = await contractWrappers.exchange.fillOrderAsync(signedOrder, signedOrder.takerAssetAmount, taker, {
+      gasLimit: 5000000,
+      gasPrice: new BigNumber(8000000000)
     });
     await web3Wrapper.awaitTransactionSuccessAsync(txHash);
   }
