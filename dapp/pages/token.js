@@ -4,8 +4,7 @@ export default class extends React.Component {
   static async getInitialProps({ query }) {
     return {
       tokenContract: query.contract,
-      tokenId: query.id,
-      tokenImageExt: query.ext,
+      tokenId: query.id
     };
   }
 
@@ -40,7 +39,7 @@ export default class extends React.Component {
   }
 
   handleFillOrder = async (orderId) => {
-    
+
   }
 
   render () {
@@ -50,7 +49,7 @@ export default class extends React.Component {
 
         <div className="row" style={{ textAlign: 'center' }}>
           <div className="col s4">
-            <img src={`https://storage.googleapis.com/opensea-prod.appspot.com/${this.props.tokenContract}/${this.props.tokenId}${this.props.tokenImageExt}`} style={{ maxHeight: 240 }} /><br />
+            <img src={`https://storage.googleapis.com/opensea-prod.appspot.com/${this.props.tokenContract}/${this.props.tokenId}.png`} style={{ maxHeight: 240 }} onError={(e) => e.target.src.endsWith('.png') ? e.target.src = e.target.src.replace('.png', '.svg') : null} /><br />
 
             <br />
 
