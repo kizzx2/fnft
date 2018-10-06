@@ -45,7 +45,7 @@ contract FungibleNonFungibleToken is StandardToken {
     function depositAsset() public {
         require(!deposited);
         msg.sender.transfer(address(this).balance);
-        asset.transferFrom(msg.sender, this, assetId);
+        asset.transferFrom(msg.sender, address(this), assetId);
         deposited = true;
     }
 
@@ -54,6 +54,7 @@ contract FungibleNonFungibleToken is StandardToken {
     }
 
     function approveSale() public {
+        require(!approved[msg.sender], "sale already approved");
         approved[msg.sender] = true;
         supplyApproved = supplyApproved.add(balances[msg.sender]);
         if (isSaleApproved()) {
@@ -62,13 +63,14 @@ contract FungibleNonFungibleToken is StandardToken {
     }
 
     function disapproveSale() public {
+        require(approved[msg.sender], "sale already disapproved");
         approved[msg.sender] = false;
         supplyApproved = supplyApproved.sub(balances[msg.sender]);
     }
 
     function () public payable {
-        require(isSaleApproved());
-        // accept ether
+        require(!deposited || isSaleApproved());
+        // accept ether for
     }
 
     function isValidSignature(
