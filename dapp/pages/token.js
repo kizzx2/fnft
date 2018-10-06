@@ -39,6 +39,9 @@ export default class extends React.Component {
     });
   }
 
+  handleFillOrder = async (orderId) => {
+    
+  }
 
   render () {
     return (
@@ -115,7 +118,7 @@ export default class extends React.Component {
                   <tr>
                     <td>{tr[0]}</td>
                     <td>{tr[1]} ETH</td>
-                    <td><button className="btn" style={{ backgroundColor: '#ff5722' }}>Fill</button></td>
+                    <td><button className="btn" style={{ backgroundColor: '#ff5722' }} onClick={() => this.handleFillOrder(orderId)}>Fill</button></td>
                   </tr>
                 )}
               </tbody>
