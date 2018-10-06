@@ -1,3 +1,10 @@
+## Developing
+
+```
+npm i
+npm run dev
+```
+
 ## Building and deploying
 
 ```
