@@ -36,56 +36,70 @@ export default class extends React.Component {
     price: 0,
     expiration: 0,
     web3: {},
-    contractWrappers: {}
+    contractWrappers: {},
+    web3Wrapper: {}
   };
 
-  handleCreateOrder = async () => {
-    const {contractWrappers, web3Wrapper} = this.state
+  handleCreateOrder = async (erc721Address, tokenId, price, expiration) => {
+    const {
+      contractWrappers, 
+      web3Wrapper, 
+      web3,
+    } = this.state
 
-    const [maker] = await web3Wrapper.getAvailableAddressesAsync();
-    const taker = maker
-    const zrxTokenAddress = contractWrappers.exchange.getZRXTokenAddress();
+    const addresses = await web3Wrapper.getAvailableAddressesAsync();
+    const maker = addresses[0]
+
+    const taker = maker //set taker hardcoded for now. need to update with contract address
+    console.log(addresses)
     const etherTokenAddress = contractWrappers.etherToken.getContractAddressIfExists();
+    console.log(etherTokenAddress)
     const DECIMALS = 18;
-    const makerAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
-    const takerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
-    // the amount the maker is selling of maker asset
-    const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5), DECIMALS);
-    // the amount the maker wants of taker asset
-    const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.1), DECIMALS);
+    const makerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
+    const takerAssetData = assetDataUtils.encodeERC721AssetData(erc721Address, new BigNumber(tokenId));
 
-    const makerZRXApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
-      zrxTokenAddress,
+    // the amount the maker is selling of maker asset
+    const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(price), DECIMALS);
+    // the amount the maker wants of taker asset
+    const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS);
+    //allow 0x ERC721 proxy to move the NFT on behalf of taker
+    // const takerErc721ApprovalTxHash = await contractWrappers.erc721Token.setProxyApprovalForAllAsync(
+    //   erc721Address,
+    //   taker,
+    //   true,
+    //   {
+    //     from: maker,
+    //     gasLimit: 2000000,
+    //     gasPrice: new BigNumber(8000000000)
+    //   }
+    //   );
+    // await web3Wrapper.awaitTransactionSuccessAsync(takerErc721ApprovalTxHash);
+    // Allow the 0x ERC20 Proxy to move WETH on behalf of maker
+    const makerWETHApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
+      etherTokenAddress,
       maker,
       );
-    await web3Wrapper.awaitTransactionSuccessAsync(makerZRXApprovalTxHash);
+    await web3Wrapper.awaitTransactionSuccessAsync(makerWETHApprovalTxHash);
 
-    // Allow the 0x ERC20 Proxy to move WETH on behalf of takerAccount
-    const takerWETHApprovalTxHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
-      etherTokenAddress,
-      taker,
-      );
-    await web3Wrapper.awaitTransactionSuccessAsync(takerWETHApprovalTxHash);
-
-    // Convert ETH into WETH for taker by depositing ETH into the WETH contract
-    const takerWETHDepositTxHash = await contractWrappers.etherToken.depositAsync(
-      etherTokenAddress,
-      takerAssetAmount,
-      taker,
-      );
-    await web3Wrapper.awaitTransactionSuccessAsync(takerWETHDepositTxHash);
+    // Convert ETH into WETH for maker by depositing ETH into the WETH contract
+    // const makerWETHDepositTxHash = await contractWrappers.etherToken.depositAsync(
+    //   etherTokenAddress,
+    //   makerAssetAmount,
+    //   maker,
+    //   );
+    // await web3Wrapper.awaitTransactionSuccessAsync(makerWETHDepositTxHash);
 
     //generate order, hardcoded some values right now
     const exchangeAddress = contractWrappers.exchange.getContractAddress();
     const order = {
       exchangeAddress: exchangeAddress,
-      expirationTimeSeconds: 1538848689651,
+      expirationTimeSeconds: new BigNumber(Math.floor(Date.now()/1000) + expiration),
       feeRecipientAddress: "0x0000000000000000000000000000000000000000",
       makerAddress: maker,
       makerAssetAmount: makerAssetAmount,
       makerAssetData: makerAssetData,
       makerFee: new BigNumber(0),
-      salt: Date.now(),
+      salt: new BigNumber(Date.now()),
       senderAddress: "0x0000000000000000000000000000000000000000",
       takerAddress: "0x0000000000000000000000000000000000000000",
       takerAssetAmount: takerAssetAmount,
@@ -94,11 +108,12 @@ export default class extends React.Component {
     }
 
     const orderHashHex = orderHashUtils.getOrderHashHex(order);
-    const signature = await signatureUtils.ecSignOrderHashAsync(providerEngine, orderHashHex, maker, SignerType.Default);
+    const signature = await signatureUtils.ecSignOrderHashAsync(web3.currentProvider, orderHashHex, maker, SignerType.Metamask);
     const signedOrder = { ...order, signature };
-
     await contractWrappers.exchange.validateFillOrderThrowIfInvalidAsync(signedOrder, takerAssetAmount, taker);
     console.log(signedOrder)
+    const JSONSignedOrder = JSON.stringify(signedOrder)
+    window.localStorage.setItem("signedOrder", JSONSignedOrder)
   }
 
   render() {
@@ -122,7 +137,7 @@ export default class extends React.Component {
           onChange={(e) => this.setState({expiration: e.target.value})} 
           />
         </div>
-        <button onClick={this.handleCreateOrder}>Create Order</button>
+        <button onClick={() => this.handleCreateOrder("0x2fb698dd012a07abdc7e35d7a149f8912f2b1d0a",17,0.01,1000000)}>Create Order</button>
       </Layout>
     );
   }

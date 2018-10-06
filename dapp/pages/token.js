@@ -15,9 +15,9 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 export default class extends React.Component {
   static async getInitialProps({ query }) {
     return {
-      walletAddress: query.wallet,
       tokenContract: query.contract,
-      tokenId: query.id
+      tokenId: query.id,
+      tokenImageExt: query.ext,
     };
   }
 
@@ -35,19 +35,6 @@ export default class extends React.Component {
   };
 
   async componentDidMount() {
-    const db = firebase.firestore();
-    const orders = await db.collection(`orders-${this.props.walletAddress}`).get();
-
-    const buyOrders = [];
-
-    debugger;
-    if (orders) {
-      orders.forEach((o) => {
-        const dat = o.data();
-        buyOrders.push([dat.makerAddress, dat.makerAssetAmount])
-      });
-    }
-
     this.setState({
       currentSellOrderProposer: '0x12345',
       currentSellOrderPrice: '111 ETH',
@@ -56,7 +43,11 @@ export default class extends React.Component {
         ['0x22345', '30%', 'Rejected'],
         ['0x32345', '25%', ''],
       ],
-      buyOrders,
+      buyOrders: [
+        ['0x9876', 2500],
+        ['0x9876', 500],
+        ['0x9876', 10],
+      ],
       tokenName: 'CryptoTulip',
       tokenId: '12345',
       highestBid: 1828,
@@ -129,7 +120,7 @@ export default class extends React.Component {
 
         <div className="row" style={{ textAlign: 'center' }}>
           <div className="col s4">
-            <img src={`https://storage.googleapis.com/opensea-prod.appspot.com/${this.props.tokenContract}/${this.props.tokenId}.png`} style={{ maxHeight: 240 }} onError={(e) => e.target.src.endsWith('.png') ? e.target.src = e.target.src.replace('.png', '.svg') : null} /><br />
+            <img src={`https://storage.googleapis.com/opensea-prod.appspot.com/${this.props.tokenContract}/${this.props.tokenId}${this.props.tokenImageExt}`} style={{ maxHeight: 240 }} /><br />
 
             <br />
 
@@ -157,8 +148,8 @@ export default class extends React.Component {
               </thead>
 
               <tbody>
-                {this.state.capTable.map((tr, i) =>
-                  <tr key={`tr-${i}`}>
+                {this.state.capTable.map((tr) =>
+                  <tr>
                     <td>{tr[0]}</td>
                     <td>{tr[1]}</td>
                     <td>{tr[2]}</td>
@@ -193,8 +184,8 @@ export default class extends React.Component {
               </thead>
 
               <tbody>
-                {this.state.buyOrders.map((tr, i) =>
-                  <tr key={`tr-${i}`}>
+                {this.state.buyOrders.map((tr) =>
+                  <tr>
                     <td>{tr[0]}</td>
                     <td>{tr[1]} ETH</td>
                     <td><button className="btn" style={{ backgroundColor: '#ff5722' }} onClick={() => this.handleFillOrder("0x2fb698dd012a07abdc7e35d7a149f8912f2b1d0a",17)}>Fill</button></td>
