@@ -39,8 +39,46 @@ export default class extends React.Component {
     });
   }
 
-  handleFillOrder = async (orderId) => {
-    
+  handleFillOrder = async (address,tokenId) => {
+    const JSONSignedOrder = window.localStorage.getItem("signedOrder")
+    const [taker] = await web3Wrapper.getAvailableAddressesAsync();
+    const parsed = JSON.parse(JSONSignedOrder)
+    const signedOrder = parsed
+    // const order = {
+    //   exchangeAddress: exchangeAddress,
+    //   expirationTimeSeconds: new BigNumber(Math.floor(Date.now()/1000) + expiration),
+    //   feeRecipientAddress: "0x0000000000000000000000000000000000000000",
+    //   makerAddress: maker,
+    //   makerAssetAmount: makerAssetAmount,
+    //   makerAssetData: makerAssetData,
+    //   makerFee: new BigNumber(0),
+    //   salt: new BigNumber(Date.now()),
+    //   senderAddress: "0x0000000000000000000000000000000000000000",
+    //   takerAddress: "0x0000000000000000000000000000000000000000",
+    //   takerAssetAmount: takerAssetAmount,
+    //   takerAssetData: takerAssetData,
+    //   takerFee: new BigNumber(0),
+    // }
+
+    //allow 0x ERC721 proxy to move the NFT on behalf of taker
+    const takerErc721ApprovalTxHash = await contractWrappers.erc721Token.setProxyApprovalForAllAsync(
+      address,
+      taker,
+      true,
+      {
+        from: taker,
+        gasLimit: 2000000,
+        gasPrice: new BigNumber(8000000000)
+      }
+      );
+    await web3Wrapper.awaitTransactionSuccessAsync(takerErc721ApprovalTxHash);
+
+    await contractWrappers.exchange.validateFillOrderThrowIfInvalidAsync(signedOrder, takerAssetAmount, taker);
+
+    const txHash = await contractWrappers.exchange.fillOrderAsync(signedOrder, takerAssetAmount, taker, {
+      gasLimit: 4000000,
+    });
+    await web3Wrapper.awaitTransactionSuccessAsync(txHash);
   }
 
   render () {
@@ -118,7 +156,7 @@ export default class extends React.Component {
                   <tr>
                     <td>{tr[0]}</td>
                     <td>{tr[1]} ETH</td>
-                    <td><button className="btn" style={{ backgroundColor: '#ff5722' }} onClick={() => this.handleFillOrder(orderId)}>Fill</button></td>
+                    <td><button className="btn" style={{ backgroundColor: '#ff5722' }} onClick={() => this.handleFillOrder("0x2fb698dd012a07abdc7e35d7a149f8912f2b1d0a",17)}>Fill</button></td>
                   </tr>
                 )}
               </tbody>
