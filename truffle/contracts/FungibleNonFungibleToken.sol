@@ -15,7 +15,7 @@ contract FungibleNonFungibleToken is StandardToken {
     uint public assetId;
 
     mapping (address => bool) public approved;
-    uint supplyApproved;
+    uint public supplyApproved;
 
     bool public sold = false;
     bool public deposited = false;
@@ -43,9 +43,9 @@ contract FungibleNonFungibleToken is StandardToken {
 
     // sender has to approve transfer first, mby use 0x for this as well?
     function depositAsset() public {
-        require(!deposited);
+        require(!deposited, "NFT already deposited");
         msg.sender.transfer(address(this).balance);
-        asset.transferFrom(msg.sender, this, assetId);
+        asset.transferFrom(msg.sender, address(this), assetId);
         deposited = true;
     }
 
@@ -54,6 +54,8 @@ contract FungibleNonFungibleToken is StandardToken {
     }
 
     function approveSale() public {
+        require(deposited, "nothing deposited yet");
+        require(!approved[msg.sender], "sale already approved");
         approved[msg.sender] = true;
         supplyApproved = supplyApproved.add(balances[msg.sender]);
         if (isSaleApproved()) {
@@ -62,13 +64,15 @@ contract FungibleNonFungibleToken is StandardToken {
     }
 
     function disapproveSale() public {
+        require(deposited, "nothing deposited yet");
+        require(approved[msg.sender], "sale already disapproved");
         approved[msg.sender] = false;
         supplyApproved = supplyApproved.sub(balances[msg.sender]);
     }
 
     function () public payable {
-        require(isSaleApproved());
-        // accept ether
+        require(!deposited || isSaleApproved());
+        // accept ether for
     }
 
     function isValidSignature(
@@ -85,13 +89,17 @@ contract FungibleNonFungibleToken is StandardToken {
         sold = true;
     }
 
+    function shareInEth() public view returns (uint) {
+        return this.balance / (totalSupply_ / balances[msg.sender]);
+    }
+
     function withdraw() public {
         require(sold, "asset not sold");
         uint share = balances[msg.sender];
-        uint eth = address(this).balance.mul(totalSupply_).div(share); // danger of overflow?
-        balances[msg.sender] = balances[msg.sender].sub(share);
+        require(share > 0, "has to have a share");
+        msg.sender.transfer(shareInEth());
+        balances[msg.sender] = 0;
         totalSupply_ = totalSupply_.sub(share);
-        msg.sender.transfer(eth);
     }
 
     modifier isTransferable(address _from, address _to) {
