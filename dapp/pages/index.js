@@ -23,6 +23,7 @@ export default class extends React.Component {
             <tr>
               <th>NFT</th>
               <th>Highest Bid</th>
+              <th>Submit new buy order</th>
             </tr>
           </thead>
 
@@ -35,6 +36,10 @@ export default class extends React.Component {
                   </Link>
                 </td>
                 <td>ETH 1234</td>
+                <td>
+                  <Link href={`/create-erc721-order`}><button className="btn" style={{ backgroundColor: '#ff5722' }}>Create Buy Order</button></Link>
+                </td>
+
               </tr>
             ) }
           </tbody>
