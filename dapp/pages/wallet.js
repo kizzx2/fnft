@@ -3,6 +3,7 @@ import Layout from '../components/layout';
 export default class extends React.Component {
   static async getInitialProps({ query }) {
     return {
+      walletAddress: query.wallet,
       tokenContract: query.contract,
       tokenId: query.id
     };
@@ -18,7 +19,20 @@ export default class extends React.Component {
     highestBid: '',
   };
 
-  componentDidMount() {
+  async componentDidMount() {
+    const db = firebase.firestore();
+    const orders = await db.collection(`orders-${this.props.walletAddress}`).get();
+
+    const buyOrders = [];
+
+    debugger;
+    if (orders) {
+      orders.forEach((o) => {
+        const dat = o.data();
+        buyOrders.push([dat.makerAddress, dat.makerAssetAmount])
+      });
+    }
+
     this.setState({
       currentSellOrderProposer: '0x12345',
       currentSellOrderPrice: '111 ETH',
@@ -27,11 +41,7 @@ export default class extends React.Component {
         ['0x22345', '30%', 'Rejected'],
         ['0x32345', '25%', ''],
       ],
-      buyOrders: [
-        ['0x9876', 2500],
-        ['0x9876', 500],
-        ['0x9876', 10],
-      ],
+      buyOrders,
       tokenName: 'CryptoTulip',
       tokenId: '12345',
       highestBid: 1828,
@@ -77,8 +87,8 @@ export default class extends React.Component {
               </thead>
 
               <tbody>
-                {this.state.capTable.map((tr) =>
-                  <tr>
+                {this.state.capTable.map((tr, i) =>
+                  <tr key={`tr-${i}`}>
                     <td>{tr[0]}</td>
                     <td>{tr[1]}</td>
                     <td>{tr[2]}</td>
@@ -113,8 +123,8 @@ export default class extends React.Component {
               </thead>
 
               <tbody>
-                {this.state.buyOrders.map((tr) =>
-                  <tr>
+                {this.state.buyOrders.map((tr, i) =>
+                  <tr key={`tr-${i}`}>
                     <td>{tr[0]}</td>
                     <td>{tr[1]} ETH</td>
                     <td><button className="btn" style={{ backgroundColor: '#ff5722' }} onClick={() => this.handleFillOrder(orderId)}>Fill</button></td>

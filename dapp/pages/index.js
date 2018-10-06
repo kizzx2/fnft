@@ -39,15 +39,15 @@ export default class extends React.Component {
           <br />
 
           <div className="col s6">
-            <Link href="/new">
+            <a href="/new">
               <button className="btn" style={{ backgroundColor: '#ff5722' }}>Deploy new wallet</button>
-            </Link>
+            </a>
           </div>
 
           <div className="col s6">
-            <Link href="/import">
+            <a href="/import">
               <button className="btn" style={{ backgroundColor: '#ff5722' }}>Import existing wallet</button>
-            </Link>
+            </a>
           </div>
         </div>
 
@@ -68,7 +68,7 @@ export default class extends React.Component {
               <tr key={`wallet-${i}`}>
                 <td style={{ width: 1, paddingRight: 32 }}>{wallet[0]} of {wallet[1]}</td>
                 <td style={{ width: 1, paddingRight: 32 }}>
-                  <Link href={`/token?contract=${wallet[2]}&id=${wallet[3]}`}>
+                  <Link href={`/wallet?wallet=${wallet[1]}&contract=${wallet[2]}&id=${wallet[3]}`}>
                     <img src={`https://storage.googleapis.com/opensea-prod.appspot.com/${wallet[2]}/${wallet[3]}.png`} style={{ maxHeight: 240, cursor: 'pointer' }} onError={(e) => e.target.src.endsWith('.png') ? e.target.src = e.target.src.replace('.png', '.svg') : null} />
                   </Link>
                 </td>
