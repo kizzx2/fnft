@@ -97,9 +97,9 @@ contract FungibleNonFungibleToken is StandardToken {
         require(sold, "asset not sold");
         uint share = balances[msg.sender];
         require(share > 0, "has to have a share");
+        msg.sender.transfer(shareInEth());
         balances[msg.sender] = 0;
         totalSupply_ = totalSupply_.sub(share);
-        msg.sender.transfer(shareInEth());
     }
 
     modifier isTransferable(address _from, address _to) {
