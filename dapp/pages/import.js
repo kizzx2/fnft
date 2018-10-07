@@ -7,11 +7,16 @@ import { getWeb3 } from '../components/web3-utils';
 export default class extends React.Component {
   go = (e) => {
     e.preventDefault();
-    debugger;
     if (this.state.importWalletAddress !== '') {
+      const addrs = JSON.parse(window.localStorage.getItem('walletAddresses') || '[]');
+
+      if (addrs.includes(this.state.importWalletAddress)) {
+        alert("address already added!");
+        return;
+      }
+
       window.localStorage.setItem('walletAddresses', JSON.stringify(
-        JSON.parse(window.localStorage.getItem('walletAddresses') || '[]').concat([
-          this.state.importWalletAddress])));
+        addrs.concat([this.state.importWalletAddress])));
     }
     Router.push('/');
   }
