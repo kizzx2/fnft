@@ -37,10 +37,54 @@ export default class extends React.Component {
     expiration: 0,
     web3: {},
     contractWrappers: {},
-    web3Wrapper: {}
+    web3Wrapper: {},
+    erc20Quantity: 0,
   };
 
-  handleCreateOrder = async (erc721Address, tokenId, price, expiration) => {
+  handleFillOrderErc20 = async (address) => {
+    const {web3Wrapper, contractWrappers} = this.state
+    const JSONSignedOrder = window.localStorage.getItem("signedOrder")
+    const [taker] = await web3Wrapper.getAvailableAddressesAsync();
+    const parsed = JSON.parse(JSONSignedOrder)
+    const signedOrder = {
+      exchangeAddress: parsed.exchangeAddress,
+      expirationTimeSeconds: new BigNumber(parsed.expirationTimeSeconds),
+      feeRecipientAddress: parsed.feeRecipientAddress,
+      makerAddress: parsed.makerAddress,
+      makerAssetAmount: new BigNumber(parsed.makerAssetAmount),
+      makerAssetData: parsed.makerAssetData,
+      makerFee: new BigNumber(parsed.makerFee),
+      salt: new BigNumber(parsed.salt),
+      senderAddress: parsed.senderAddress,
+      takerAddress: parsed.takerAddress,
+      takerAssetAmount: new BigNumber(parsed.takerAssetAmount),
+      takerAssetData: parsed.takerAssetData,
+      takerFee: new BigNumber(parsed.takerFee),
+      signature: parsed.signature
+    }
+
+
+    //get approval
+    const proxyAllowance = await contractWrappers.erc20Token.getProxyAllowanceAsync(address,taker)
+    if(contractWrappers.erc20Token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS.comparedTo(proxyAllowance)===1){
+      const takerErc20ApprovalTxhash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
+        address,
+        taker,
+        
+        );
+      await web3Wrapper.awaitTransactionSuccessAsync(takerErc20ApprovalTxhash);
+    }
+    //check if signature valid
+    await contractWrappers.exchange.validateFillOrderThrowIfInvalidAsync(signedOrder, signedOrder.takerAssetAmount, taker);
+    // fill
+    const txHash = await contractWrappers.exchange.fillOrderAsync(signedOrder, signedOrder.takerAssetAmount, taker, {
+      gasLimit: 5000000,
+      gasPrice: new BigNumber(8000000000)
+    });
+    await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+  }
+
+  handleCreateOrder = async (erc20Address, price, erc20Quantity, expiration) => {
     const {
       contractWrappers, 
       web3Wrapper, 
@@ -50,17 +94,15 @@ export default class extends React.Component {
     const addresses = await web3Wrapper.getAvailableAddressesAsync();
     const maker = addresses[0]
 
-    console.log(addresses)
     const etherTokenAddress = contractWrappers.etherToken.getContractAddressIfExists();
-    console.log(etherTokenAddress)
     const DECIMALS = 18;
     const makerAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
-    const takerAssetData = assetDataUtils.encodeERC721AssetData(erc721Address, new BigNumber(tokenId));
+    const takerAssetData = assetDataUtils.encodeERC20AssetData(erc20Address);
 
     // the amount the maker is selling of maker asset
-    const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(price), DECIMALS);
+    const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(price*erc20Quantity), DECIMALS);
     // the amount the maker wants of taker asset
-    const takerAssetAmount = new BigNumber(1)
+    const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(erc20Quantity), DECIMALS)
 
     // Allow the 0x ERC20 Proxy to move WETH on behalf of maker
     const proxyAllowance = await contractWrappers.erc20Token.getProxyAllowanceAsync(etherTokenAddress,maker)
@@ -111,7 +153,7 @@ export default class extends React.Component {
 
   render() {
     console.log(this.state)
-    const {price, expiration} = this.state
+    const {price, expiration, erc20Quantity} = this.state
     return (
       <Layout>
         <div>
@@ -123,6 +165,14 @@ export default class extends React.Component {
           />
         </div>
         <div>
+          <label>Input Buy Quantity of FNFT</label>
+          <input 
+          type="number"
+          value={erc20Quantity}
+          onChange={(e) => this.setState({erc20Quantity : e.target.value})} 
+          />
+        </div>
+        <div>
           <label>Input Order Expiration</label>
           <input 
           type="number"
@@ -130,7 +180,15 @@ export default class extends React.Component {
           onChange={(e) => this.setState({expiration: e.target.value})} 
           />
         </div>
-        <button onClick={() => this.handleCreateOrder("0x2fb698dd012a07abdc7e35d7a149f8912f2b1d0a",17,0.01,1000000)}>Create Order</button>
+        <button onClick={() => this.handleCreateOrder("0x02Ca5A9c33585C06336481559FB0eadd3d656324",0.01,0.01,1000000)}>Create Order</button>
+        <br />
+        <hr />
+        <br />
+        <div>
+          <header>Current Orders</header>
+          <div>PLACEHOLDER</div>
+          <button onClick={() => this.handleFillOrderErc20("0x02Ca5A9c33585C06336481559FB0eadd3d656324")}>Fill Order</button>
+        </div>
       </Layout>
     );
   }
