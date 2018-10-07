@@ -48,6 +48,7 @@ export default class extends React.Component {
     }
 
     const abi = web3.eth.contract(FungibleNonFungibleToken.abi);
+
     const fnftContract = await new Promise((resolve, reject) =>
       web3.eth.contract(FungibleNonFungibleToken.abi).new(
       "FNFT", "FNFT",
@@ -179,7 +180,7 @@ export default class extends React.Component {
 
           <div className="row thin">
             <div className="col s9">
-              <select className="browser-default" defaultValue="" onChange={(e) => this.setState({ tokenContract: e.target.value })} value={this.state.tokenContract}>
+              <select className="browser-default" onChange={(e) => this.setState({ tokenContract: e.target.value })} value={this.state.tokenContract}>
                 <option value="" disabled>ERC721 contract address</option>
                 <option value="0x496d699ddeb144f60e124d717e255101bfbb99c8">0x496d6...99c8 Fake Kitties</option>
                 <option value="0x496d699ddeb144f60e124d717e255101bfbb99c8">0x496d6...99c8 Fake Tulip</option>
