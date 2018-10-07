@@ -15,6 +15,7 @@ export default class extends React.Component {
     const myWallets = [];
     const highestBids = {};
     const images = {};
+    const balances = {};
 
     const db = firebase.firestore();
 
@@ -44,19 +45,26 @@ export default class extends React.Component {
       if (parseInt(assetAddress) > 0)
         images[w] = await (web3Promisify(erc721Contract.tokenURI)(assetId));
 
+      balances[w] = web3.fromWei(await (web3Promisify(web3.eth.getBalance)(w))).toFixed();
+
       myWallets.push([
         percentage.times(100).toFixed() + '%',
         w, assetAddress, assetId
       ]);
     }
 
-    this.setState({ myWallets, highestBids, images });
+    this.setState({ myWallets, highestBids, images, balances });
   }
 
   state = {
     myWallets: [],
     highestBids: {}
   };
+
+  async deposit(addr) {
+    const web3 = await getWeb3();
+    await (web3Promisify(web3.eth.sendTransaction)({ to: addr, value: web3.toWei('0.01')}));
+  }
 
   render() {
     return (
@@ -94,6 +102,7 @@ export default class extends React.Component {
             <tr>
               <th>Wallet</th>
               <th>NFT</th>
+              <th>ETH Balance</th>
               <th>Highest Bid</th>
             </tr>
           </thead>
@@ -108,6 +117,12 @@ export default class extends React.Component {
                       <img src={this.state.images[wallet[1]]} style={{ maxHeight: 240, cursor: 'pointer' }} /></Link> || <span>(Empty)</span>
                   }
                 </td>
+
+                <td>
+                  {this.state.balances[wallet[1]]} ETH<br />
+                  <a className="btn-flat" style={{ color: '#ff5722' }} onClick={() => this.deposit(wallet[1])}>Deposit</a>
+                </td>
+
                 <td>
                   {this.state.highestBids[wallet[1]] &&
                   <div>
