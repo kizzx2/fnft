@@ -62,8 +62,8 @@ export default class extends React.Component {
     //   owners, stakes, this.state.tokenContract, this.state.tokenId);
 
     window.localStorage.setItem('walletAddresses', JSON.stringify(
-      JSON.parse(window.localStorage.getItem('walletAddresses') || '[]') + [
-        this.state.importWalletAddress]));
+      JSON.parse(window.localStorage.getItem('walletAddresses') || '[]').concat([
+        this.state.importWalletAddress])));
 
     Router.push('/');
   }
