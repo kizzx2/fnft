@@ -17,6 +17,12 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
 
 export default class extends React.Component {
+  static async getInitialProps({ query }) {
+    return {
+      erc20Address: query.wallet,
+    };
+  }
+
   async componentDidMount() {
     const web3 = await getWeb3()
 
@@ -111,7 +117,7 @@ export default class extends React.Component {
     const takerAssetData = assetDataUtils.encodeERC20AssetData(erc20Address);
 
     // the amount the maker is selling of maker asset
-    const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(price*erc20Quantity), DECIMALS);
+    const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(price).times(new BigNumber(erc20Quantity)), DECIMALS);
     // the amount the maker wants of taker asset
     const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(erc20Quantity), DECIMALS)
 
@@ -157,9 +163,13 @@ export default class extends React.Component {
 
     // await contractWrappers.exchange.validateFillOrderThrowIfInvalidAsync(signedOrder, takerAssetAmount, taker);
 
-    console.log(signedOrder)
-    const JSONSignedOrder = JSON.stringify(signedOrder)
-    window.localStorage.setItem("signedOrder", JSONSignedOrder)
+    // console.log(signedOrder)
+    const db = firebase.firestore();
+    await db.collection(`orders-${this.props.erc20Address}`).add({
+      blob: JSON.stringify(signedOrder)
+    });
+
+    window.history.back();
   }
 
   render() {
@@ -191,14 +201,15 @@ export default class extends React.Component {
           onChange={(e) => this.setState({expiration: e.target.value})}
           />
         </div>
-        <button onClick={() => this.handleCreateOrder("0x02Ca5A9c33585C06336481559FB0eadd3d656324",0.01,0.01,1000000)}>Create Order</button>
+
+        <button onClick={() => this.handleCreateOrder(this.props.erc20Address,this.state.price,this.state.erc20Quantity,1000000)} className="btn" style={{ backgroundColor: '#ff5722' }}>Create Order</button>
         <br />
         <hr />
         <br />
         <div>
           <header>Current Orders</header>
           <div>PLACEHOLDER</div>
-          <button onClick={() => this.handleFillOrderErc20("0x02Ca5A9c33585C06336481559FB0eadd3d656324")}>Fill Order</button>
+          <button onClick={() => this.handleFillOrderErc20(this.props.erc20Address)} className="btn" style={{ backgroundColor: '#ff5722' }}>Fill Order</button>
         </div>
       </Layout>
     );

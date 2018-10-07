@@ -18,6 +18,12 @@ import {
 
 
 export default class extends React.Component {
+  static async getInitialProps({ query }) {
+    return {
+      erc20Address: query.wallet,
+    };
+  }
+
   async componentDidMount() {
     const web3 = await getWeb3()
     const setProtocol = new SetProtocol(web3.currentProvider,addressesKovan.setProtocol)
@@ -31,6 +37,8 @@ export default class extends React.Component {
   state = { 
     component2: 0,
     component1: 0,
+    fnft1: null,
+    fnft2: null,
     web3: {},
     setProtocol: {},
     issueQty: 0,
@@ -121,24 +129,26 @@ export default class extends React.Component {
 
         <div>
           <h4>Create a FNFT Set</h4>
+
+          <div>
+            <label>FNFT 1 Address</label>
+            <input value={this.state.fnft1} onChange={(e) => this.setState({fnft1: e.target.value})} />
+          </div>
           <div>
             <label>Input % of FNFT 1 Component</label>
-            <input 
-            type="number"
-            value={component1}
-            onChange={(e) => this.setState({component1: e.target.value})} 
-            />
+            <input type="number" value={component1} onChange={(e) => this.setState({component1: e.target.value})} />
+          </div>
+
+          <div>
+            <label>FNFT 2 Address</label>
+            <input value={this.state.fnft1} onChange={(e) => this.setState({fnft1: e.target.value})} />
           </div>
           <div>
             <label>Input % of FNFT 2 Component</label>
-            <input 
-            type="number"
-            value={component2}
-            onChange={(e) => this.setState({component2: e.target.value})} 
-            />
+            <input type="number" value={component2} onChange={(e) => this.setState({component2: e.target.value})} />
           </div>
 
-          <button onClick={() => this.handleCreateSet("0x02Ca5A9c33585C06336481559FB0eadd3d656324", "0xc778417E063141139Fce010982780140Aa0cD5Ab", 5, 5, "TEST FNFT", "TFNFT", 10)} className="btn" style={{ backgroundColor: '#ff5722' }}>Create Set</button>
+          <button onClick={() => this.handleCreateSet(this.state.fnft1, this.state.fnft2, 5, 5, "TEST FNFT", "TFNFT", 10)} className="btn" style={{ backgroundColor: '#ff5722' }}>Create Set</button>
         </div>
         <br />
         <br />

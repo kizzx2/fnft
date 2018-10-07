@@ -126,7 +126,7 @@ export default class extends React.Component {
           onChange={(e) => this.setState({expiration: e.target.value})} 
           />
         </div>
-        <button onClick={() => this.handleCreateOrder("0x2fb698dd012a07abdc7e35d7a149f8912f2b1d0a",17,0.01,1000000)}>Create Order</button>
+        <button onClick={() => this.handleCreateOrder("0x2fb698dd012a07abdc7e35d7a149f8912f2b1d0a",17,0.01,1000000)} className="btn" style={{ backgroundColor: '#ff5722' }}>Create Order</button>
       </Layout>
     );
   }

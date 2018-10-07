@@ -33,12 +33,16 @@ export default class extends React.Component {
 
       if (orders) {
         orders.forEach((o) => {
-          const dat = o.data();
+          const dat = JSON.parse(o.data().blob);
           buyOrders.push([dat.makerAddress, dat.makerAssetAmount])
         });
       }
 
-      highestBids[w] = (_.maxBy('buyOrders', 'makerAssetAmount') || {makerAssetAmount: null}).makerAssetAmount;
+      highestBids[w] = (_.maxBy(buyOrders, (x) => x[1]) || [null, null])[1];
+
+      if (highestBids[w]) {
+        highestBids[w] = web3.fromWei(highestBids[w]);
+      }
 
       const assetId = await (web3Promisify(walletContract.assetId)());
       const erc721Contract = web3.eth.contract(ERC721.abi).at(assetAddress);
@@ -110,8 +114,8 @@ export default class extends React.Component {
           <tbody>
             { this.state.myWallets.map((wallet, i) =>
               <tr key={`wallet-${i}`}>
-                <td style={{ width: 1, paddingRight: 32 }}>{wallet[0]} of {wallet[1]}</td>
-                <td style={{ paddingRight: 32 }}>
+                <td style={{ maxWidth: 100, overflow: 'hidden' }}>{wallet[0]} of {wallet[1]}</td>
+                <td>
                   {this.state.images[wallet[1]] &&
                     <Link href={`/wallet?wallet=${wallet[1]}&contract=${wallet[2]}&id=${wallet[3]}`}>
                       <img src={this.state.images[wallet[1]]} style={{ maxHeight: 240, cursor: 'pointer' }} /></Link> || <span>(Empty)</span>
@@ -126,7 +130,7 @@ export default class extends React.Component {
                 <td>
                   {this.state.highestBids[wallet[1]] &&
                   <div>
-                    highestBid[wallet[1]] ETH
+                    {this.state.highestBids[wallet[1]]} ETH
                   </div> || <div>--</div>
                   }
                 </td>

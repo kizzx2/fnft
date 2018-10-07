@@ -39,20 +39,36 @@ export default class extends React.Component {
     web3Wrapper: {}
   };
 
+  async handleApproveSale() {
+    const web3 = await getWeb3()
+    const fnftContract = web3.eth.contract(FungibleNonFungibleToken.abi).at(
+      this.props.walletAddress);
+
+    await (web3Promisify(fnftContract.approveSale)());
+  }
+
+  async handleRejectSale() {
+    const web3 = await getWeb3()
+    const fnftContract = web3.eth.contract(FungibleNonFungibleToken.abi).at(
+      this.props.walletAddress);
+
+    await (web3Promisify(fnftContract.disapproveSale)());
+  }
+
   async componentDidMount() {
     const db = firebase.firestore();
     const orders = await db.collection(`orders-${this.props.walletAddress}`).get();
 
     const buyOrders = [];
+    const web3 = await getWeb3()
 
     if (orders) {
       orders.forEach((o) => {
-        const dat = o.data();
-        buyOrders.push([dat.makerAddress, dat.makerAssetAmount])
+        const dat = JSON.parse(o.data().blob);
+        buyOrders.push([dat.makerAddress, web3.fromWei(dat.makerAssetAmount)])
       });
     }
 
-    const web3 = await getWeb3()
     const contractWrappers = new ContractWrappers(web3.currentProvider, { networkId: 3 });
     const web3Wrapper = new Web3Wrapper(web3.currentProvider);
 
@@ -61,28 +77,34 @@ export default class extends React.Component {
       this.props.walletAddress);
 
     const assetId = (await (web3Promisify(fnftContract.assetId)())).toNumber();
+    const totalSupply = (await (web3Promisify(fnftContract.totalSupply)())).toFixed();
 
     const assetAddress = await (web3Promisify(fnftContract.asset)());
     let image = null;
+    let assetName = null;
 
     if (parseInt(assetAddress) > 0) {
       const erc721Contract = web3.eth.contract(ERC721.abi).at(assetAddress);
       image = await (web3Promisify(erc721Contract.tokenURI)(assetId));
+      assetName = await (web3Promisify(erc721Contract.name)());
     }
 
-    const highestBid = (_.maxBy('buyOrders', 'makerAssetAmount') || {makerAssetAmount: ''}).makerAssetAmount;
+    const highestBid = (_.maxBy(buyOrders, (x) => x[1]) || [null,null])[1];
     const supplyApproved = (await (web3Promisify(fnftContract.supplyApproved)())).toNumber();
 
     this.setState({
       currentSellOrderProposer: highestBid.makerAddress, // HACK just assume it's the highest bid for now
       currentSellOrderPrice: highestBid.makerAssetAmount, // HACK just assume it's the highest bid for now
       capTable: [
-        ['0x12345', '45%', 'Approved'],
-        ['0x22345', '30%', 'Rejected'],
-        ['0x32345', '25%', ''],
+        // STUB
+        // ['0x12345', '45%', 'Approved'],
+        // ['0x22345', '30%', 'Rejected'],
+        // ['0x32345', '25%', ''],
       ],
       buyOrders,
       tokenName: await (web3Promisify(fnftContract.name)()),
+      assetName,
+      totalSupply,
       tokenId: assetId,
       image,
       highestBid,
@@ -160,7 +182,9 @@ export default class extends React.Component {
             <br />
 
             {this.state.tokenName}<br />
+            {this.state.assetName}<br />
             #{this.state.tokenId}<br />
+            Total number of shares: {this.state.totalSupply}<br />
             {this.state.highestBid &&
               <div>
                 Highest Bid<br />
@@ -169,12 +193,14 @@ export default class extends React.Component {
             }
           </div>
           <div className="col s4">
-            { this.state.supplyApproved > 0 &&
+            {this.state.supplyApproved > 0 &&
                 <div>
                   <h5>Current Active Sell Order</h5>
                   <h6>{this.state.currentSellOrderProposer} proposed to sell this asset for {this.state.currentSellOrderPrice}</h6>
 
                   <hr />
+
+                  {this.state.supplyApproved} shares approved of this sale.
 
                   <h5>Cap Table</h5>
 
@@ -204,22 +230,24 @@ export default class extends React.Component {
 
               <div style={{ display: 'flex' }}>
                 <div style={{ flex: '1 1 auto' }}>
-                  <button className="btn" style={{ backgroundColor: '#ff5722' }}>Reject</button>
+                  <button className="btn" style={{ backgroundColor: '#ff5722' }} onClick={this.handleRejectSale}>Reject</button>
                 </div>
                 <div style={{ flex: '1 1 auto' }}>
-                  <button className="btn" style={{ backgroundColor: '#ff5722' }}>Approve</button>
+                  <button className="btn" style={{ backgroundColor: '#ff5722' }} onClick={this.handleApproveSale}>Approve</button>
                 </div>
                 </div>
+              </div>
+              }
+              <div>
                 <br />
                 <hr />
                 <br />
                 <div>My Shares Balance</div>
                 <div>PLACEHOLDER</div>
-                <Link href={`/create-erc20-order`}>
+                <Link href={`/create-erc20-order?wallet=${this.props.walletAddress}`}>
                   <button className="btn" style={{ backgroundColor: '#ff5722' }}>Buy/Sell Shares</button>
                 </Link>
               </div>
-            }
           </div>
           <div className="col s4">
             <h5>Buy Orders</h5>
@@ -236,9 +264,9 @@ export default class extends React.Component {
               <tbody>
                 {this.state.buyOrders.map((tr, i) =>
                   <tr key={`tr-${i}`}>
-                    <td>{tr[0]}</td>
+                    <td style={{ maxWidth: 30, overflow: 'hidden' }}>{tr[0]}</td>
                     <td>{tr[1]} ETH</td>
-                    <td><button className="btn" style={{ backgroundColor: '#ff5722' }} onClick={() => this.handleFillOrderErc721("0x2fb698dd012a07abdc7e35d7a149f8912f2b1d0a",17)}>Fill</button></td>
+                    <td><button className="btn" style={{ backgroundColor: '#ff5722' }} onClick={() => this.handleFillOrderErc721(this.props.tokenContract,this.props.tokenId)}>Fill</button></td>
                   </tr>
                 )}
               </tbody>
