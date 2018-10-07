@@ -1,5 +1,5 @@
 const { assertThrowsAsync, balance} = require('./helpers');
-const TestNonFungibleToken = artifacts.require("TestNft.sol");
+const FakeKitty = artifacts.require("FakeKitty.sol");
 const FungibleNonFungibleToken = artifacts.require("FungibleNonFungibleToken.sol");
 
 contract('FungibleNonFungibleToken', async (accounts) => {
@@ -7,13 +7,19 @@ contract('FungibleNonFungibleToken', async (accounts) => {
 	let me = accounts[0];
 	let alice = accounts[1];
 	let bob = accounts[2];
+	let kittyId = 18;
 
 	beforeEach(async () => {
-		asset = await TestNonFungibleToken.new();
+		asset = await FakeKitty.new();
 		assert.ok(asset);
-		await asset.mint();
-		assert.equal(me, await asset.ownerOf(0));
-		fnft = await FungibleNonFungibleToken.new("Fnft", "FNFT", [me, alice, bob], [1000, 1000, 1000], asset.address, 0);
+		await asset.mint(kittyId);
+		assert.equal(me, await asset.ownerOf(kittyId));
+		fnft = await FungibleNonFungibleToken.new(
+				"Fnft", "FNFT",
+				[me, alice, bob],
+				[1000, 1000, 1000],
+				asset.address, kittyId
+		);
 	});
 
 	it("creates contract", async () => {
@@ -49,9 +55,9 @@ contract('FungibleNonFungibleToken', async (accounts) => {
 		});
 
 		it("NFT can be transfered", async () => {
-			await asset.approve(fnft.address, 0);
+			await asset.approve(fnft.address, kittyId);
 			await fnft.depositAsset();
-			assert.equal(fnft.address, await asset.ownerOf(0));
+			assert.equal(fnft.address, await asset.ownerOf(kittyId));
 		});
 
 		it("cannot approve to sale", async () => {
@@ -63,7 +69,7 @@ contract('FungibleNonFungibleToken', async (accounts) => {
 
 		beforeEach(async () => {
 			await fnft.send(1);
-			await asset.approve(fnft.address, 0);
+			await asset.approve(fnft.address, kittyId);
 			await fnft.depositAsset();
 		});
 
@@ -91,7 +97,7 @@ contract('FungibleNonFungibleToken', async (accounts) => {
 
 		beforeEach(async () => {
 			await fnft.send(1);
-			await asset.approve(fnft.address, 0);
+			await asset.approve(fnft.address, kittyId);
 			await fnft.depositAsset();
 			await fnft.approveSale();
 			await fnft.approveSale({from: alice});

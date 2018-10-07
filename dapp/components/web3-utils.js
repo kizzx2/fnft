@@ -23,3 +23,8 @@ export async function getWeb3() {
   }
   return window.web3;
 }
+
+export function web3Promisify(f) {
+  return (...args) => new Promise((rs, rj) =>
+    f(...args, (err, res) => err ? rj(err) : rs(res)));
+}
