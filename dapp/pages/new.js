@@ -2,68 +2,79 @@ import Layout from '../components/layout';
 import Router from 'next/router';
 import Link from 'next/link';
 import Bluebird from 'bluebird';
-import { getWeb3 } from '../components/web3-utils';
+import { getWeb3, web3Promisify } from '../components/web3-utils';
 import FungibleNonFungibleToken from '../../truffle/build/contracts/FungibleNonFungibleToken.json';
 
 export default class extends React.Component {
+  async componentDidMount() {
+    const web3 = await getWeb3();
+
+    this.setState({
+      owner1Addr: web3.eth.accounts[0],
+      owner1Shares: 1000000
+    });
+  }
+
   go = async (e) => {
     e.preventDefault();
 
     const web3 = await getWeb3();
-    const gasEstimate = await new Promise((resolve, reject) => {
-      web3.eth.estimateGas({
-        data: FungibleNonFungibleToken.bytecode
-      }, (err, res) => err ? reject(err) : resolve(res));
-    });
+    const gasEstimate = (await web3Promisify(web3.eth.estimateGas)({
+      data: FungibleNonFungibleToken.bytecode
+    })) * 2;
 
-    const fnftContract = await new Promise((resolve, reject) => {
+    const owners = [];
+    const stakes = [];
+
+    if (this.state.owner1Addr) {
+      owners.push(this.state.owner1Addr);
+      stakes.push(this.state.owner1Shares);
+    }
+    if (this.state.owner2Addr) {
+      owners.push(this.state.owner2Addr);
+      stakes.push(this.state.owner2Shares);
+    }
+    if (this.state.owner3Addr) {
+      owners.push(this.state.owner3Addr);
+      stakes.push(this.state.owner3Shares);
+    }
+    if (this.state.owner4Addr) {
+      owners.push(this.state.owner4Addr);
+      stakes.push(this.state.owner4Shares);
+    }
+    if (this.state.owner5Addr) {
+      owners.push(this.state.owner5Addr);
+      stakes.push(this.state.owner5Shares);
+    }
+
+    const abi = web3.eth.contract(FungibleNonFungibleToken.abi);
+    const fnftContract = await new Promise((resolve, reject) =>
       web3.eth.contract(FungibleNonFungibleToken.abi).new(
-        "FNFT", "FNFT",
-        [web3.eth.defaultAccount], [10000],
-        '0xfa1af23990250aed191942de8bae55733cb760d8', 1988,
-        {
-          from: web3.eth.accounts[0],
-          data: FungibleNonFungibleToken.bytecode,
-          gas: gasEstimate,
-        }, (err, res) => err ? reject(err) : resolve(res)
-      );
-    });
+      "FNFT", "FNFT",
+      owners, stakes,
+      this.state.tokenContract, this.state.tokenId,
+      {
+        from: web3.eth.accounts[0],
+        data: FungibleNonFungibleToken.bytecode,
+        gas: gasEstimate,
+      }, (err, res) => err ? reject(err) : resolve(res)
+    ));
 
-    // TODO
-    //
-    // const web3 = await getWeb3();
-    // const walletFactory = getWalletFactory();
-    //
-    // const owners = [];
-    // const stakes = [];
-    //
-    // if (this.state.owner1Addr) {
-    //   owners.push(this.state.owner1Addr);
-    //   stakes.push(this.state.owner1Shares);
-    // }
-    // if (this.state.owner2Addr) {
-    //   owners.push(this.state.owner2Addr);
-    //   stakes.push(this.state.owner2Shares);
-    // }
-    // if (this.state.owner3Addr) {
-    //   owners.push(this.state.owner3Addr);
-    //   stakes.push(this.state.owner3Shares);
-    // }
-    // if (this.state.owner4Addr) {
-    //   owners.push(this.state.owner4Addr);
-    //   stakes.push(this.state.owner4Shares);
-    // }
-    // if (this.state.owner5Addr) {
-    //   owners.push(this.state.owner5Addr);
-    //   stakes.push(this.state.owner5Shares);
-    // }
-    //
-    // const newWalletAddress = await new walletFactory(
-    //   owners, stakes, this.state.tokenContract, this.state.tokenId);
+    let newContractAddress = null;
+
+    // Wait for it to have an address
+    while (true) {
+      const receipt = await (web3Promisify(web3.eth.getTransactionReceipt)(fnftContract.transactionHash));
+
+      if (receipt && receipt.contractAddress) {
+        newContractAddress = receipt.contractAddress;
+        break;
+      }
+    }
 
     window.localStorage.setItem('walletAddresses', JSON.stringify(
       JSON.parse(window.localStorage.getItem('walletAddresses') || '[]').concat([
-        this.state.importWalletAddress])));
+        newContractAddress])));
 
     Router.push('/');
   }
