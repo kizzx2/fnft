@@ -34,7 +34,7 @@ contract FungibleNonFungibleToken is StandardToken {
         symbol = _symbol;
         assetId = _assetId;
         asset = ERC721(_assetAddress);
-        require(asset.exists(assetId), "asset doesn't exist");
+        // require(asset.exists(assetId), "asset doesn't exist");
         for (uint i = 0; i < _owners.length; i++) {
             totalSupply_ = totalSupply_.add(_stakes[i]);
             balances[_owners[i]] = balances[_owners[i]].add(_stakes[i]);
