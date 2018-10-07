@@ -159,6 +159,18 @@ export default class extends React.Component {
             ) }
           </tbody>
         </table>
+
+        <br />
+        <br />
+        <hr />
+        <br />
+        <br />
+
+        <h3>What is this good for?</h3>
+
+        <img style={{ maxWidth: '100%' }} src="https://www.dropbox.com/s/n6woait6zybl73i/scr1.jpg?dl=1" /><br />
+        <img style={{ maxWidth: '100%' }} src="https://www.dropbox.com/s/u17mnjs6katizdn/scr2.jpg?dl=1" />
+
       </Layout>
     );
   }
