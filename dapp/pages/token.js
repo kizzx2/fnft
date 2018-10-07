@@ -89,8 +89,6 @@ export default class extends React.Component {
       signature: parsed.signature
     }
 
-    console.log(signedOrder, taker)
-
     // allow 0x ERC721 proxy to move the NFT on behalf of taker
     const takerErc721ApprovalTxHash = await contractWrappers.erc721Token.setProxyApprovalForAllAsync(
       address,
