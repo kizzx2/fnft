@@ -10,7 +10,8 @@ export default ({ children, title = 'FNFT' }) => (
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
       <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
       <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-      <script src="https://www.gstatic.com/firebasejs/5.5.3/firebase.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/5.5.3/firebase-app.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/5.5.3/firebase-firestore.js"></script>
       <script dangerouslySetInnerHTML={{__html: `
 				const config = {
 					apiKey: "AIzaSyA7YwSPT25vuchMKY-J-DfLPTBwxWT_x6w",
