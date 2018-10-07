@@ -106,61 +106,61 @@ export default class extends React.Component {
         <form onSubmit={this.go}>
           <div className="row thin">
             <div className="input-field col s9">
-              <input placeholder="Owner 1 address" type="text" id="owner_1_address" value={this.state.owner1Addr} onChange={(e) => this.setState({ owner1Addr: e.target.value })} />
+              <input placeholder=" " type="text" id="owner_1_address" value={this.state.owner1Addr} onChange={(e) => this.setState({ owner1Addr: e.target.value })} />
               <label htmlFor="owner_1_address">Owner 1 Address</label>
             </div>
 
             <div className="input-field col s3">
-              <input placeholder="Owner 1 shares" type="text" id="owner_1_shares" value={this.state.owner1Shares} onChange={(e) => this.setState({ owner1Shares: e.target.value })} />
-              <label htmlFor="owner_1_shares">Owner 1 Shares</label>
+              <input placeholder=" " type="text" id="owner_1_shares" value={this.state.owner1Shares} onChange={(e) => this.setState({ owner1Shares: e.target.value })} />
+              <label htmlFor="owner_1_shares">Shares</label>
             </div>
           </div>
 
           <div className="row thin">
             <div className="input-field col s9">
-              <input placeholder="Owner 2 address" type="text" id="owner_2_address" value={this.state.owner2Addr} onChange={(e) => this.setState({ owner2Addr: e.target.value })} />
+              <input type="text" id="owner_2_address" value={this.state.owner2Addr} onChange={(e) => this.setState({ owner2Addr: e.target.value })} />
               <label htmlFor="owner_2_address">Owner 2 Address</label>
             </div>
 
             <div className="input-field col s3">
-              <input placeholder="Owner 2 shares" type="text" id="owner_2_shares" value={this.state.owner2Shares} onChange={(e) => this.setState({ owner2Shares: e.target.value })} />
-              <label htmlFor="owner_2_shares">Owner 2 Shares</label>
+              <input type="text" id="owner_2_shares" value={this.state.owner2Shares} onChange={(e) => this.setState({ owner2Shares: e.target.value })} />
+              <label htmlFor="owner_2_shares">Shares</label>
             </div>
           </div>
 
           <div className="row thin">
             <div className="input-field col s9">
-              <input placeholder="Owner 3 address" type="text" id="owner_3_address" value={this.state.owner3Addr} onChange={(e) => this.setState({ owner3Addr: e.target.value })} />
+              <input type="text" id="owner_3_address" value={this.state.owner3Addr} onChange={(e) => this.setState({ owner3Addr: e.target.value })} />
               <label htmlFor="owner_3_address">Owner 3 Address</label>
             </div>
 
             <div className="input-field col s3">
-              <input placeholder="Owner 3 shares" type="text" id="owner_3_shares" value={this.state.owner3Shares} onChange={(e) => this.setState({ owner3Shares: e.target.value })} />
-              <label htmlFor="owner_3_shares">Owner 3 Shares</label>
+              <input type="text" id="owner_3_shares" value={this.state.owner3Shares} onChange={(e) => this.setState({ owner3Shares: e.target.value })} />
+              <label htmlFor="owner_3_shares">Shares</label>
             </div>
           </div>
 
           <div className="row thin">
             <div className="input-field col s9">
-              <input placeholder="Owner 4 address" type="text" id="owner_4_address" value={this.state.owner4Addr} onChange={(e) => this.setState({ owner4Addr: e.target.value })} />
+              <input type="text" id="owner_4_address" value={this.state.owner4Addr} onChange={(e) => this.setState({ owner4Addr: e.target.value })} />
               <label htmlFor="owner_4_address">Owner 4 Address</label>
             </div>
 
             <div className="input-field col s3">
-              <input placeholder="Owner 4 shares" type="text" id="owner_4_shares" value={this.state.owner4Shares} onChange={(e) => this.setState({ owner4Shares: e.target.value })} />
-              <label htmlFor="owner_4_shares">Owner 4 Shares</label>
+              <input type="text" id="owner_4_shares" value={this.state.owner4Shares} onChange={(e) => this.setState({ owner4Shares: e.target.value })} />
+              <label htmlFor="owner_4_shares">Shares</label>
             </div>
           </div>
 
           <div className="row thin">
             <div className="input-field col s9">
-              <input placeholder="Owner 5 address" type="text" id="owner_5_address" value={this.state.owner5Addr} onChange={(e) => this.setState({ owner5Addr: e.target.value })} />
+              <input type="text" id="owner_5_address" value={this.state.owner5Addr} onChange={(e) => this.setState({ owner5Addr: e.target.value })} />
               <label htmlFor="owner_5_address">Owner 5 Address</label>
             </div>
 
             <div className="input-field col s3">
-              <input placeholder="Owner 5 shares" type="text" id="owner_5_shares" value={this.state.owner5Shares} onChange={(e) => this.setState({ owner5Shares: e.target.value })} />
-              <label htmlFor="owner_5_shares">Owner 5 Shares</label>
+              <input type="text" id="owner_5_shares" value={this.state.owner5Shares} onChange={(e) => this.setState({ owner5Shares: e.target.value })} />
+              <label htmlFor="owner_5_shares">Shares</label>
             </div>
           </div>
 
@@ -177,7 +177,7 @@ export default class extends React.Component {
             </div>
 
             <div className="input-field col s3">
-              <input placeholder="Token ID" type="text" id="token_id" value={this.state.tokenId} onChange={(e) => this.setState({ tokenId: e.target.value })} />
+              <input type="text" id="token_id" value={this.state.tokenId} onChange={(e) => this.setState({ tokenId: e.target.value })} />
               <label htmlFor="token_id">Token ID</label>
             </div>
           </div>
