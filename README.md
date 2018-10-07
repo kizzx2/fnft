@@ -1,6 +1,6 @@
 # FNFT (Fungible Non Fungible Tokens)
 
-A wallet protocol to allow transferable [Fractional Ownership](https://en.wikipedia.org/wiki/Fractional_ownership) to be implemented for ERC721 tokens (NFTs).
+A wallet protocol and implementation to allow transferable [Fractional Ownership](https://en.wikipedia.org/wiki/Fractional_ownership) to be implemented for ERC721 tokens (NFTs).
 
 ## Motivation / Philosophy
 
