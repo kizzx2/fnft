@@ -1,6 +1,8 @@
 import Layout from '../components/layout';
-import { getWeb3 } from '../components/web3-utils';
+import { getWeb3, web3Promisify } from '../components/web3-utils';
 import Link from 'next/link';
+import FungibleNonFungibleToken from '../../truffle/build/contracts/FungibleNonFungibleToken.json';
+import _ from 'lodash';
 
 import {
     assetDataUtils,
@@ -42,7 +44,6 @@ export default class extends React.Component {
 
     const buyOrders = [];
 
-    debugger;
     if (orders) {
       orders.forEach((o) => {
         const dat = o.data();
@@ -50,24 +51,30 @@ export default class extends React.Component {
       });
     }
 
+    const web3 = await getWeb3()
+    const contractWrappers = new ContractWrappers(web3.currentProvider, { networkId: 3 });
+    const web3Wrapper = new Web3Wrapper(web3.currentProvider);
+
+    const fnftContract = web3.eth.contract(FungibleNonFungibleToken.abi).at(
+      this.props.walletAddress);
+
+    const highestBid = (_.maxBy('buyOrders', 'makerAssetAmount') || {makerAssetAmount: ''}).makerAssetAmount;
+    const supplyApproved = (await (web3Promisify(fnftContract.supplyApproved)())).toNumber();
+
     this.setState({
-      currentSellOrderProposer: '0x12345',
-      currentSellOrderPrice: '111 ETH',
+      currentSellOrderProposer: highestBid.makerAddress, // HACK just assume it's the highest bid for now
+      currentSellOrderPrice: highestBid.makerAssetAmount, // HACK just assume it's the highest bid for now
       capTable: [
         ['0x12345', '45%', 'Approved'],
         ['0x22345', '30%', 'Rejected'],
         ['0x32345', '25%', ''],
       ],
       buyOrders,
-      tokenName: 'CryptoTulip',
-      tokenId: '12345',
-      highestBid: 1828,
+      tokenName: await (web3Promisify(fnftContract.name)()),
+      tokenId: (await (web3Promisify(fnftContract.assetId)())).toFixed(),
+      highestBid,
+      supplyApproved,
     });
-
-    const web3 = await getWeb3()
-
-    const contractWrappers = new ContractWrappers(web3.currentProvider, { networkId: 3 });
-    const web3Wrapper = new Web3Wrapper(web3.currentProvider);
 
     console.log(contractWrappers,web3Wrapper)
 
@@ -135,64 +142,71 @@ export default class extends React.Component {
 
         <div className="row" style={{ textAlign: 'center' }}>
           <div className="col s4">
-            <img src={`https://storage.googleapis.com/opensea-prod.appspot.com/${this.props.tokenContract}/${this.props.tokenId}.png`} style={{ maxHeight: 240 }} onError={(e) => e.target.src.endsWith('.png') ? e.target.src = e.target.src.replace('.png', '.svg') : null} /><br />
+            <img src="https://storage.googleapis.com/opensea-prod.appspot.com/0x5d00d312e171be5342067c09bae883f9bcb2003b/39856.png"  style={{ maxHeight: 240 }} onError={(e) => e.target.src.endsWith('.png') ? e.target.src = e.target.src.replace('.png', '.svg') : null} /><br />
 
             <br />
 
             {this.state.tokenName}<br />
             #{this.state.tokenId}<br />
-            <br />
-            Highest Bid<br />
-            {this.state.highestBid} ETH
+            {this.state.highestBid &&
+              <div>
+                Highest Bid<br />
+                {this.state.highestBid} ETH
+              </div>
+            }
           </div>
           <div className="col s4">
-            <h5>Current Active Sell Order</h5>
-            <h6>{this.state.currentSellOrderProposer} proposed to sell this asset for {this.state.currentSellOrderPrice}</h6>
+            { this.state.supplyApproved > 0 &&
+                <div>
+                  <h5>Current Active Sell Order</h5>
+                  <h6>{this.state.currentSellOrderProposer} proposed to sell this asset for {this.state.currentSellOrderPrice}</h6>
 
-            <hr />
+                  <hr />
 
-            <h5>Cap Table</h5>
+                  <h5>Cap Table</h5>
 
-            <table>
-              <thead>
-                <tr>
-                  <th>Shareholder</th>
-                  <th>Percentage</th>
-                  <th>Approval</th>
-                </tr>
-              </thead>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Shareholder</th>
+                        <th>Percentage</th>
+                        <th>Approval</th>
+                      </tr>
+                </thead>
 
-              <tbody>
-                {this.state.capTable.map((tr, i) =>
-                  <tr key={`tr-${i}`}>
-                    <td>{tr[0]}</td>
-                    <td>{tr[1]}</td>
-                    <td>{tr[2]}</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                <tbody>
+                  {this.state.capTable.map((tr, i) =>
+                    <tr key={`tr-${i}`}>
+                      <td>{tr[0]}</td>
+                      <td>{tr[1]}</td>
+                      <td>{tr[2]}</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
 
-            <br />
-            <hr />
-            <br />
+              <br />
+              <hr />
+              <br />
 
-            <div style={{ display: 'flex' }}>
-              <div style={{ flex: '1 1 auto' }}>
-                <button className="btn" style={{ backgroundColor: '#ff5722' }}>Reject</button>
+              <div style={{ display: 'flex' }}>
+                <div style={{ flex: '1 1 auto' }}>
+                  <button className="btn" style={{ backgroundColor: '#ff5722' }}>Reject</button>
+                </div>
+                <div style={{ flex: '1 1 auto' }}>
+                  <button className="btn" style={{ backgroundColor: '#ff5722' }}>Approve</button>
+                </div>
+                </div>
+                <br />
+                <hr />
+                <br />
+                <div>My Shares Balance</div>
+                <div>PLACEHOLDER</div>
+                <Link href={`/create-erc20-order`}>
+                  <button className="btn" style={{ backgroundColor: '#ff5722' }}>Buy/Sell Shares</button>
+                </Link>
               </div>
-              <div style={{ flex: '1 1 auto' }}>
-                <button className="btn" style={{ backgroundColor: '#ff5722' }}>Approve</button>
-              </div>
-            </div>
-            <br />
-            <hr />
-            <br />
-            <div>My Shares Balance</div>
-            <div>PLACEHOLDER</div>
-            <Link href={`/create-erc20-order`}>
-              <button className="btn" style={{ backgroundColor: '#ff5722' }}>Buy/Sell Shares</button>
-            </Link>
+            }
           </div>
           <div className="col s4">
             <h5>Buy Orders</h5>

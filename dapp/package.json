@@ -6,9 +6,9 @@
   "dependencies": {
     "0x.js": "^1.0.8",
     "@0xproject/web3-wrapper": "^3.0.3",
-    "bignumber.js": "^4.1.0",
     "bluebird": "^3.5.2",
     "firebase": "^5.5.3",
+    "lodash": "^4.17.11",
     "next": "^7.0.1",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
