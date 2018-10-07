@@ -49,6 +49,8 @@ export default class extends React.Component {
 
   state = {
     importWalletAddress: '',
+    nftAddress: "",
+    nftId: ""
   };
 
   go = (e) => {
@@ -138,9 +140,7 @@ export default class extends React.Component {
           <div className="row thin">
             <div className="col s9">
               <select className="browser-default"> <option value="" disabled selected onChange={(e) => this.setState({ tokenContract: e.target.value })}>ERC721 contract address</option>
-                <option value="0x12345">0x12345 CryptoKitties</option>
-                <option value="0x22345">0x22345 CryptoTulip</option>
-                <option value="0x32345">0x32345 CryptoCountry</option>
+                <option value="0x12345">0x12345 MyCryptoKitties</option>
               </select>
             </div>
 

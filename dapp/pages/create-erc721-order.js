@@ -15,12 +15,10 @@ import {
 } from '0x.js';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 
-
 export default class extends React.Component {
   async componentDidMount() {
     const web3 = await getWeb3()
-
-    const contractWrappers = new ContractWrappers(web3.currentProvider, { networkId: 3 });
+    const contractWrappers = new ContractWrappers(web3.currentProvider, { networkId: 42 });
     const web3Wrapper = new Web3Wrapper(web3.currentProvider);
 
     console.log(contractWrappers,web3Wrapper)
@@ -101,8 +99,6 @@ export default class extends React.Component {
     const orderHashHex = orderHashUtils.getOrderHashHex(order);
     const signature = await signatureUtils.ecSignOrderHashAsync(web3.currentProvider, orderHashHex, maker, SignerType.Metamask);
     const signedOrder = { ...order, signature };
-
-    // await contractWrappers.exchange.validateFillOrderThrowIfInvalidAsync(signedOrder, takerAssetAmount, taker);
 
     console.log(signedOrder)
     const JSONSignedOrder = JSON.stringify(signedOrder)

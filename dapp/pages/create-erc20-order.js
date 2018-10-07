@@ -20,7 +20,7 @@ export default class extends React.Component {
   async componentDidMount() {
     const web3 = await getWeb3()
 
-    const contractWrappers = new ContractWrappers(web3.currentProvider, { networkId: 3 });
+    const contractWrappers = new ContractWrappers(web3.currentProvider, { networkId: 42 });
     const web3Wrapper = new Web3Wrapper(web3.currentProvider);
 
     console.log(contractWrappers,web3Wrapper)

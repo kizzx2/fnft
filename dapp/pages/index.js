@@ -51,6 +51,15 @@ export default class extends React.Component {
           </div>
         </div>
 
+        <div className="row" style={{ textAlign: 'center' }}>
+          <br />
+          <div className="col s6">
+            <a href="/create-erc20-sets">
+              <button className="btn" style={{ backgroundColor: '#ff5722' }}>Bundle My FNFTs!</button>
+            </a>
+          </div>
+        </div>
+
         <br />
         <br />
 
