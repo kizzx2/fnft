@@ -111,7 +111,7 @@ export default class extends React.Component {
             { this.state.myWallets.map((wallet, i) =>
               <tr key={`wallet-${i}`}>
                 <td style={{ width: 1, paddingRight: 32 }}>{wallet[0]} of {wallet[1]}</td>
-                <td style={{ width: 1, paddingRight: 32 }}>
+                <td style={{ paddingRight: 32 }}>
                   {this.state.images[wallet[1]] &&
                     <Link href={`/wallet?wallet=${wallet[1]}&contract=${wallet[2]}&id=${wallet[3]}`}>
                       <img src={this.state.images[wallet[1]]} style={{ maxHeight: 240, cursor: 'pointer' }} /></Link> || <span>(Empty)</span>
