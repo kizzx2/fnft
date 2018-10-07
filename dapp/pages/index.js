@@ -16,6 +16,7 @@ export default class extends React.Component {
     const highestBids = {};
     const images = {};
     const balances = {};
+    const statuses = {};
 
     const db = firebase.firestore();
 
@@ -44,10 +45,23 @@ export default class extends React.Component {
         highestBids[w] = web3.fromWei(highestBids[w]);
       }
 
-      const assetId = await (web3Promisify(walletContract.assetId)());
+      const assetId = (await (web3Promisify(walletContract.assetId)())).toNumber();
       const erc721Contract = web3.eth.contract(ERC721.abi).at(assetAddress);
-      if (parseInt(assetAddress) > 0)
-        images[w] = await (web3Promisify(erc721Contract.tokenURI)(assetId));
+
+      if (parseInt(assetAddress) > 0) {
+        try {
+          images[w] = await (web3Promisify(erc721Contract.tokenURI)(assetId));
+        } catch {
+          continue;
+        }
+
+        const currentAssetOwner = await (web3Promisify(erc721Contract.ownerOf)(assetId));
+        if (currentAssetOwner === w) {
+          statuses[w] = "(Backed!)";
+        } else {
+          statuses[w] = "(Waiting for asset to be deposited)";
+        }
+      }
 
       balances[w] = web3.fromWei(await (web3Promisify(web3.eth.getBalance)(w))).toFixed();
 
@@ -57,12 +71,15 @@ export default class extends React.Component {
       ]);
     }
 
-    this.setState({ myWallets, highestBids, images, balances });
+    this.setState({ myWallets, highestBids, images, balances, statuses });
   }
 
   state = {
     myWallets: [],
-    highestBids: {}
+    highestBids: {},
+    images: {},
+    balances: {},
+    statuses: {}
   };
 
   async deposit(addr) {
@@ -118,7 +135,11 @@ export default class extends React.Component {
                 <td>
                   {this.state.images[wallet[1]] &&
                     <Link href={`/wallet?wallet=${wallet[1]}&contract=${wallet[2]}&id=${wallet[3]}`}>
-                      <img src={this.state.images[wallet[1]]} style={{ maxHeight: 240, cursor: 'pointer' }} /></Link> || <span>(Empty)</span>
+                      <div>
+                        <img src={this.state.images[wallet[1]]} style={{ maxHeight: 240, cursor: 'pointer' }} />
+                        {this.state.statuses[wallet[1]]}
+                      </div>
+                    </Link> || <span>(Empty)</span>
                   }
                 </td>
 
