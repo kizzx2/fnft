@@ -95,8 +95,8 @@ export default class extends React.Component {
     const myBalance = (await (web3Promisify(fnftContract.balanceOf)(web3.eth.accounts[0]))).toFixed();
 
     this.setState({
-      currentSellOrderProposer: highestBid.makerAddress, // HACK just assume it's the highest bid for now
-      currentSellOrderPrice: highestBid.makerAssetAmount, // HACK just assume it's the highest bid for now
+      currentSellOrderProposer: (highestBid || [])[0], // HACK just assume it's the highest bid for now
+      currentSellOrderPrice: (highestBid || [])[1], // HACK just assume it's the highest bid for now
       capTable: [
         // STUB
         // ['0x12345', '45%', 'Approved'],
