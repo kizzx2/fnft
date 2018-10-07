@@ -37,8 +37,8 @@ export default class extends React.Component {
   state = { 
     component2: 0,
     component1: 0,
-    fnft1: null,
-    fnft2: null,
+    fnft1: '',
+    fnft2: '',
     web3: {},
     setProtocol: {},
     issueQty: 0,
