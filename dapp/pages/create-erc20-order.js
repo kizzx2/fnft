@@ -20,7 +20,18 @@ export default class extends React.Component {
   async componentDidMount() {
     const web3 = await getWeb3()
 
-    const contractWrappers = new ContractWrappers(web3.currentProvider, { networkId: 42 });
+    const contactConfig =
+		    { poa: {
+				    exchangeContractAddress: "0xdcc0b6783e1eb0013a5b919128058e9d24126db1",
+				    zrxContractAddress: "0x9343c5977dd819a52e9fd898297f9a434e9f0c03",
+				    erc20ProxyContractAddress: "0xceff1cc6429a016988a15d05b4ef937ae4fd9d8d",
+				    erc721ProxyContractAddress: "0xfc31265e6a26de3029f3eea183d26da151614789",
+				    forwarderContractAddress: "0x7e105914630ba58d9b162be8f6820fee4244f053"},
+			    kovan: {
+		    	  networkId: 42}};
+
+
+    const contractWrappers = new ContractWrappers(web3.currentProvider, contactConfig.kovan);
     const web3Wrapper = new Web3Wrapper(web3.currentProvider);
 
     console.log(contractWrappers,web3Wrapper)
@@ -32,7 +43,7 @@ export default class extends React.Component {
     })
   }
 
-  state = { 
+  state = {
     price: 0,
     expiration: 0,
     web3: {},
@@ -70,7 +81,7 @@ export default class extends React.Component {
       const takerErc20ApprovalTxhash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
         address,
         taker,
-        
+
         );
       await web3Wrapper.awaitTransactionSuccessAsync(takerErc20ApprovalTxhash);
     }
@@ -86,8 +97,8 @@ export default class extends React.Component {
 
   handleCreateOrder = async (erc20Address, price, erc20Quantity, expiration) => {
     const {
-      contractWrappers, 
-      web3Wrapper, 
+      contractWrappers,
+      web3Wrapper,
       web3,
     } = this.state
 
@@ -158,26 +169,26 @@ export default class extends React.Component {
       <Layout>
         <div>
           <label>Input Buy Price</label>
-          <input 
+          <input
           type="number"
           value={price}
-          onChange={(e) => this.setState({price: e.target.value})} 
+          onChange={(e) => this.setState({price: e.target.value})}
           />
         </div>
         <div>
           <label>Input Buy Quantity of FNFT</label>
-          <input 
+          <input
           type="number"
           value={erc20Quantity}
-          onChange={(e) => this.setState({erc20Quantity : e.target.value})} 
+          onChange={(e) => this.setState({erc20Quantity : e.target.value})}
           />
         </div>
         <div>
           <label>Input Order Expiration</label>
-          <input 
+          <input
           type="number"
           value={expiration}
-          onChange={(e) => this.setState({expiration: e.target.value})} 
+          onChange={(e) => this.setState({expiration: e.target.value})}
           />
         </div>
         <button onClick={() => this.handleCreateOrder("0x02Ca5A9c33585C06336481559FB0eadd3d656324",0.01,0.01,1000000)}>Create Order</button>
