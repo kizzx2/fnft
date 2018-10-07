@@ -141,7 +141,7 @@ export default class extends React.Component {
 
           <div>
             <label>FNFT 2 Address</label>
-            <input value={this.state.fnft1} onChange={(e) => this.setState({fnft1: e.target.value})} />
+            <input value={this.state.fnft2} onChange={(e) => this.setState({fnft2: e.target.value})} />
           </div>
           <div>
             <label>Input % of FNFT 2 Component</label>
