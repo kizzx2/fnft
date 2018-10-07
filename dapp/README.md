@@ -1,5 +1,7 @@
 ## Developing
 
+truffle has to be compiled 1st
+
 ```
 npm i
 npm run dev
