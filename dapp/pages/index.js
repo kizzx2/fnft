@@ -64,23 +64,23 @@ export default class extends React.Component {
         <div className="row" style={{ textAlign: 'center' }}>
           <br />
 
-          <div className="col s6">
+          <div className="col s4">
             <a href="/new">
+              <i className="large material-icons" style={{ color: '#ff5722' }}>control_point</i>
               <button className="btn" style={{ backgroundColor: '#ff5722' }}>Deploy new wallet</button>
             </a>
           </div>
 
-          <div className="col s6">
+          <div className="col s4">
             <a href="/import">
+              <i className="large material-icons" style={{ color: '#ff5722' }}>call_merge</i>
               <button className="btn" style={{ backgroundColor: '#ff5722' }}>Import existing wallet</button>
             </a>
           </div>
-        </div>
 
-        <div className="row" style={{ textAlign: 'center' }}>
-          <br />
-          <div className="col s6">
+          <div className="col s4">
             <a href="/create-erc20-sets">
+              <i className="large material-icons" style={{ color: '#ff5722' }}>attach_money</i>
               <button className="btn" style={{ backgroundColor: '#ff5722' }}>Bundle My FNFTs!</button>
             </a>
           </div>

@@ -118,8 +118,9 @@ export default class extends React.Component {
     const {component2, component1, issueQty, redeemQty} = this.state
     return (
       <Layout>
+
         <div>
-          <header>Create a FNFT Set</header>
+          <h4>Create a FNFT Set</h4>
           <div>
             <label>Input % of FNFT 1 Component</label>
             <input 
@@ -136,7 +137,8 @@ export default class extends React.Component {
             onChange={(e) => this.setState({component2: e.target.value})} 
             />
           </div>
-          <button onClick={() => this.handleCreateSet("0x02Ca5A9c33585C06336481559FB0eadd3d656324", "0xc778417E063141139Fce010982780140Aa0cD5Ab", 5, 5, "TEST FNFT", "TFNFT", 10)}>Create Set</button>
+
+          <button onClick={() => this.handleCreateSet("0x02Ca5A9c33585C06336481559FB0eadd3d656324", "0xc778417E063141139Fce010982780140Aa0cD5Ab", 5, 5, "TEST FNFT", "TFNFT", 10)} className="btn" style={{ backgroundColor: '#ff5722' }}>Create Set</button>
         </div>
         <br />
         <br />
@@ -150,7 +152,7 @@ export default class extends React.Component {
             onChange={(e) => this.setState({issueQty: e.target.value})} 
             />
           </div>
-          <button onClick={() => this.issueFNFTSet("0xBCdBA6380F1463c495A53553e9c6f06e8570A2Ef")}>Create Set</button>
+          <button onClick={() => this.issueFNFTSet("0xBCdBA6380F1463c495A53553e9c6f06e8570A2Ef")} style={{ backgroundColor: '#ff5722' }} className="btn">Create Set</button>
         </div>
         <br />
         <br />
@@ -165,7 +167,7 @@ export default class extends React.Component {
             onChange={(e) => this.setState({redeemQty: e.target.value})} 
             />
           </div>
-          <button onClick={() => this.redeemFNFTSet("0xBCdBA6380F1463c495A53553e9c6f06e8570A2Ef")}>Create Set</button>
+          <button onClick={() => this.redeemFNFTSet("0xBCdBA6380F1463c495A53553e9c6f06e8570A2Ef")} className="btn" style={{ backgroundColor: '#ff5722' }}>Create Set</button>
         </div>
       </Layout>
     );
