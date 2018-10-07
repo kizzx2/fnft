@@ -162,7 +162,7 @@ export default class extends React.Component {
             onChange={(e) => this.setState({issueQty: e.target.value})} 
             />
           </div>
-          <button onClick={() => this.issueFNFTSet("0xBCdBA6380F1463c495A53553e9c6f06e8570A2Ef")} style={{ backgroundColor: '#ff5722' }} className="btn">Create Set</button>
+          <button onClick={() => this.issueFNFTSet("0xBCdBA6380F1463c495A53553e9c6f06e8570A2Ef")} style={{ backgroundColor: '#ff5722' }} className="btn">Issue</button>
         </div>
         <br />
         <br />
@@ -177,7 +177,7 @@ export default class extends React.Component {
             onChange={(e) => this.setState({redeemQty: e.target.value})} 
             />
           </div>
-          <button onClick={() => this.redeemFNFTSet("0xBCdBA6380F1463c495A53553e9c6f06e8570A2Ef")} className="btn" style={{ backgroundColor: '#ff5722' }}>Create Set</button>
+          <button onClick={() => this.redeemFNFTSet("0xBCdBA6380F1463c495A53553e9c6f06e8570A2Ef")} className="btn" style={{ backgroundColor: '#ff5722' }}>Redeem</button>
         </div>
       </Layout>
     );
