@@ -4,7 +4,7 @@ A wallet protocol and implementation to allow transferable [Fractional Ownership
 
 ## Motivation / Philosophy
 
-People often want to co-own an NFT, as explained in the article linked above. Implementing this using a traditional multi-sig wallet is a logical next step but this proposal brings several important extra features:
+People often want to co-own an NFT, as explained in the article linked above. Implementing this using a traditional multi-sig wallet is a logical next step but this proposal brings several important improvements in terms of further closing the gap between decentralized and centralized financila systems:
 
 - As a Minority Owner (e.g. 20%), if the Majority decides to sell the NFT, I should still be entitled to 20% of the profit received.
 
