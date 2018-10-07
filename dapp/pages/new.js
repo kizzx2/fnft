@@ -47,6 +47,8 @@ export default class extends React.Component {
       stakes.push(this.state.owner5Shares);
     }
 
+    console.log("JERJER", this.state);
+
     const abi = web3.eth.contract(FungibleNonFungibleToken.abi);
     const fnftContract = await new Promise((resolve, reject) =>
       web3.eth.contract(FungibleNonFungibleToken.abi).new(
@@ -80,7 +82,6 @@ export default class extends React.Component {
   }
 
   state = {
-    importWalletAddress: '',
     nftAddress: "",
     nftId: "",
     owner1Addr: '',
@@ -93,6 +94,8 @@ export default class extends React.Component {
     owner4Shares: '',
     owner5Addr: '',
     owner5Shares: '',
+    tokenContract: '',
+    tokenId: '',
   };
 
   render() {
@@ -178,8 +181,8 @@ export default class extends React.Component {
 
           <div className="row thin">
             <div className="col s9">
-              <select className="browser-default" defaultValue="">
-                <option value="" disabled onChange={(e) => this.setState({ tokenContract: e.target.value })}>ERC721 contract address</option>
+              <select className="browser-default" defaultValue="" onChange={(e) => this.setState({ tokenContract: e.target.value })} value={this.state.tokenContract}>
+                <option value="" disabled>ERC721 contract address</option>
                 <option value="0x496d699ddeb144f60e124d717e255101bfbb99c8">0x496d6...99c8 Fake Kitties</option>
                 <option value="0x496d699ddeb144f60e124d717e255101bfbb99c8">0x496d6...99c8 Fake Tulip</option>
                 <option value="0x496d699ddeb144f60e124d717e255101bfbb99c8">0x496d6...99c8 Fake Country</option>
