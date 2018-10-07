@@ -14,6 +14,8 @@ People often want to co-own an NFT, as explained in the article linked above. Im
 
 - It is the logical next step in the evolution of a decentralized financial system. In the traditional financial system, high value items are rarely solely owned by 1 person.
 
+Some concrete and easy-to-relate example use cases include representing an apartment co-ownership 🏠, selling fraction of an art piece 🎨, etc.
+
 ## Features
 
 - NFTs (ERC721) and their shares (ERC20) can be traded directly on DEX using [0x protocol](https://0xproject.com/) in FNFT Wallet.
