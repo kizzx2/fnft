@@ -18,9 +18,8 @@ export async function getWeb3() {
   if (!window.web3Loaded)
     loadWeb3();
 
-  while (!window.web3Loaded) {
-    await new Promise((r) => setTimeout(r, 1000));
-  }
+  while (!window.web3Loaded) { await new Promise((r) => setTimeout(r, 1000)); }
+  while (window.web3.eth.accounts.length === 0) { await new Promise((r) => setTimeout(r, 1000)); }
   return window.web3;
 }
 
