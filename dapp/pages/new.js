@@ -47,8 +47,6 @@ export default class extends React.Component {
       stakes.push(this.state.owner5Shares);
     }
 
-    console.log("JERJER", this.state);
-
     const abi = web3.eth.contract(FungibleNonFungibleToken.abi);
     const fnftContract = await new Promise((resolve, reject) =>
       web3.eth.contract(FungibleNonFungibleToken.abi).new(
