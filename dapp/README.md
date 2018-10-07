@@ -19,5 +19,5 @@ And then deploy the `out` folder (e.g. to S3)
 ## Deploy
 
 ```
-firebase deploy --project fnft-demo
+next build && next export -o public && firebase deploy --project fnft-demo
 ```
