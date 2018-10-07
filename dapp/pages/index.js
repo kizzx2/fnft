@@ -109,9 +109,11 @@ export default class extends React.Component {
                   </Link>
                 </td>
                 <td>
+                  {this.state.highestBids[wallet[1]] &&
                   <div>
-                    1234 ETH
-                  </div>
+                    highestBid[wallet[1]] ETH
+                  </div> || <div>--</div>
+                  }
                 </td>
               </tr>
             ) }
