@@ -17,7 +17,7 @@ People often want to co-own an NFT, as explained in the article linked above. Im
 ## Features
 
 - NFTs (ERC721) and their shares (ERC20) can be traded directly on DEX using [0x protocol](https://0xproject.com/) in FNFT Wallet.
-- Create Set bundles of shares (ERC20) directly in the FNFT wallet.
+- Create [Set](https://wallet.coinbase.com/) bundles of shares (ERC20) directly in the FNFT wallet.
 - The whole ecosystem, including [0x Exchange contract](https://sokol.poaexplorer.com/txid/search/0x5b1986bd6a77fa04d9b964f778e9633639402520a048accabc247eeb67c3d441), ERC721 tokens and the FNFT wallet contract, has been deployed to the [POA Ethereum Network](https://poa.network/) testnet
 - Works great with mobile wallets such as [Coinbase Wallet](https://wallet.coinbase.com/)
 
