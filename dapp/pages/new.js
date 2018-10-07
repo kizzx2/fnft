@@ -70,6 +70,8 @@ export default class extends React.Component {
 
   state = {
     importWalletAddress: '',
+    nftAddress: "",
+    nftId: ""
   };
 
   render() {
