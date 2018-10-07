@@ -168,7 +168,10 @@ export default class extends React.Component {
 
         <h3>What is this good for?</h3>
 
+        <p>Tokenization of ERC721</p>
         <img style={{ maxWidth: '100%' }} src="https://www.dropbox.com/s/n6woait6zybl73i/scr1.jpg?dl=1" /><br />
+
+        <p>Tokenization is reversible</p>
         <img style={{ maxWidth: '100%' }} src="https://www.dropbox.com/s/u17mnjs6katizdn/scr2.jpg?dl=1" />
 
       </Layout>
