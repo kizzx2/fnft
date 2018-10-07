@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Head from 'next/head';
 
-export default ({ children, title = 'This is the default title' }) => (
+export default ({ children, title = 'FNFT' }) => (
   <div>
     <Head>
       <title>{ title }</title>
