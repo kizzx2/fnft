@@ -4,11 +4,7 @@ import _ from 'lodash';
 import Bluebird from 'bluebird';
 import { getWeb3, web3Promisify } from '../components/web3-utils';
 import FungibleNonFungibleToken from '../../truffle/build/contracts/FungibleNonFungibleToken.json';
-
-const PICS = [
-  ['0x5d00d312e171be5342067c09bae883f9bcb2003b', '39856'],
-  ['0x06012c8cf97bead5deae237070f9587f8e7a266d', '585392'],
-];
+import ERC721 from '../../truffle/build/contracts/ERC721.json';
 
 export default class extends React.Component {
   async componentDidMount() {
@@ -18,6 +14,7 @@ export default class extends React.Component {
 
     const myWallets = [];
     const highestBids = {};
+    const images = {};
 
     const db = firebase.firestore();
 
@@ -42,16 +39,18 @@ export default class extends React.Component {
 
       highestBids[w] = (_.maxBy('buyOrders', 'makerAssetAmount') || {makerAssetAmount: null}).makerAssetAmount;
 
+      const assetId = await (web3Promisify(walletContract.assetId)());
+      const erc721Contract = web3.eth.contract(ERC721.abi).at(assetAddress);
+      if (parseInt(assetAddress) > 0)
+        images[w] = await (web3Promisify(erc721Contract.tokenURI)(assetId));
+
       myWallets.push([
         percentage.times(100).toFixed() + '%',
-        w, assetAddress, await (web3Promisify(walletContract.assetId)())
+        w, assetAddress, assetId
       ]);
     }
 
-    this.setState({
-      myWallets,
-      highestBids,
-    });
+    this.setState({ myWallets, highestBids, images });
   }
 
   state = {
@@ -104,9 +103,10 @@ export default class extends React.Component {
               <tr key={`wallet-${i}`}>
                 <td style={{ width: 1, paddingRight: 32 }}>{wallet[0]} of {wallet[1]}</td>
                 <td style={{ width: 1, paddingRight: 32 }}>
-                  <Link href={`/wallet?wallet=${wallet[1]}&contract=${wallet[2]}&id=${wallet[3]}`}>
-                    <img src={`https://storage.googleapis.com/opensea-prod.appspot.com/${PICS[i][0]}/${PICS[i][1]}.png`} style={{ maxHeight: 240, cursor: 'pointer' }} onError={(e) => e.target.src.endsWith('.png') ? e.target.src = e.target.src.replace('.png', '.svg') : null} />
-                  </Link>
+                  {this.state.images[wallet[1]] &&
+                    <Link href={`/wallet?wallet=${wallet[1]}&contract=${wallet[2]}&id=${wallet[3]}`}>
+                      <img src={this.state.images[wallet[1]]} style={{ maxHeight: 240, cursor: 'pointer' }} /></Link> || <span>(Empty)</span>
+                  }
                 </td>
                 <td>
                   {this.state.highestBids[wallet[1]] &&

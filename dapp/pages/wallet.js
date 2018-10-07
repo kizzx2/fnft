@@ -2,6 +2,7 @@ import Layout from '../components/layout';
 import { getWeb3, web3Promisify } from '../components/web3-utils';
 import Link from 'next/link';
 import FungibleNonFungibleToken from '../../truffle/build/contracts/FungibleNonFungibleToken.json';
+import ERC721 from '../../truffle/build/contracts/ERC721.json';
 import _ from 'lodash';
 
 import {
@@ -55,8 +56,19 @@ export default class extends React.Component {
     const contractWrappers = new ContractWrappers(web3.currentProvider, { networkId: 3 });
     const web3Wrapper = new Web3Wrapper(web3.currentProvider);
 
+
     const fnftContract = web3.eth.contract(FungibleNonFungibleToken.abi).at(
       this.props.walletAddress);
+
+    const assetId = (await (web3Promisify(fnftContract.assetId)())).toNumber();
+
+    const assetAddress = await (web3Promisify(fnftContract.asset)());
+    let image = null;
+
+    if (parseInt(assetAddress) > 0) {
+      const erc721Contract = web3.eth.contract(ERC721.abi).at(assetAddress);
+      image = await (web3Promisify(erc721Contract.tokenURI)(assetId));
+    }
 
     const highestBid = (_.maxBy('buyOrders', 'makerAssetAmount') || {makerAssetAmount: ''}).makerAssetAmount;
     const supplyApproved = (await (web3Promisify(fnftContract.supplyApproved)())).toNumber();
@@ -71,7 +83,8 @@ export default class extends React.Component {
       ],
       buyOrders,
       tokenName: await (web3Promisify(fnftContract.name)()),
-      tokenId: (await (web3Promisify(fnftContract.assetId)())).toFixed(),
+      tokenId: assetId,
+      image,
       highestBid,
       supplyApproved,
     });
@@ -142,7 +155,7 @@ export default class extends React.Component {
 
         <div className="row" style={{ textAlign: 'center' }}>
           <div className="col s4">
-            <img src="https://storage.googleapis.com/opensea-prod.appspot.com/0x5d00d312e171be5342067c09bae883f9bcb2003b/39856.png"  style={{ maxHeight: 240 }} onError={(e) => e.target.src.endsWith('.png') ? e.target.src = e.target.src.replace('.png', '.svg') : null} /><br />
+            <img src={this.state.image} style={{ maxHeight: 240 }} /><br />
 
             <br />
 

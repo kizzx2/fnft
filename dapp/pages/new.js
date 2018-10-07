@@ -170,9 +170,9 @@ export default class extends React.Component {
             <div className="col s9">
               <select className="browser-default" defaultValue="">
                 <option value="" disabled onChange={(e) => this.setState({ tokenContract: e.target.value })}>ERC721 contract address</option>
-                <option value="0xfa1af23990250aed191942de8bae55733cb760d8">0xfa1af...60d8 Kovan Kitties</option>
-                <option value="0xfa1af23990250aed191942de8bae55733cb760d8">0xfa1af...60d8 Kovan Tulip</option>
-                <option value="0xfa1af23990250aed191942de8bae55733cb760d8">0xfa1af...60d8 Kovan Country</option>
+                <option value="0x496d699ddeb144f60e124d717e255101bfbb99c8">0x496d6...99c8 Fake Kitties</option>
+                <option value="0x496d699ddeb144f60e124d717e255101bfbb99c8">0x496d6...99c8 Fake Tulip</option>
+                <option value="0x496d699ddeb144f60e124d717e255101bfbb99c8">0x496d6...99c8 Fake Country</option>
               </select>
             </div>
 
