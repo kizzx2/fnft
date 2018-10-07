@@ -36,6 +36,7 @@ export default class extends React.Component {
     highestBid: '',
     web3: {},
     contractWrappers: {},
+    myBalance: null,
     web3Wrapper: {}
   };
 
@@ -91,6 +92,7 @@ export default class extends React.Component {
 
     const highestBid = (_.maxBy(buyOrders, (x) => x[1]) || [null,null])[1];
     const supplyApproved = (await (web3Promisify(fnftContract.supplyApproved)())).toNumber();
+    const myBalance = (await (web3Promisify(fnftContract.balanceOf)(web3.eth.accounts[0]))).toFixed();
 
     this.setState({
       currentSellOrderProposer: highestBid.makerAddress, // HACK just assume it's the highest bid for now
@@ -107,11 +109,12 @@ export default class extends React.Component {
       totalSupply,
       tokenId: assetId,
       image,
+      myBalance,
       highestBid,
       supplyApproved,
     });
 
-    console.log(contractWrappers,web3Wrapper)
+    // console.log(contractWrappers,web3Wrapper)
 
     this.setState({
       web3,
@@ -242,8 +245,8 @@ export default class extends React.Component {
                 <br />
                 <hr />
                 <br />
-                <div>My Shares Balance</div>
-                <div>PLACEHOLDER</div>
+                <div>My Shares Balance:</div>
+                <div>{this.state.myBalance} shares</div>
                 <Link href={`/create-erc20-order?wallet=${this.props.walletAddress}`}>
                   <button className="btn" style={{ backgroundColor: '#ff5722' }}>Buy/Sell Shares</button>
                 </Link>
