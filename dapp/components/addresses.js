@@ -2,9 +2,9 @@ export const addressesRopsten = {
 	zeroEx: {
 		AssetProxyOwner: "0xf5fa5b5fed2727a0e44ac67f6772e97977aa358b",
 		ERC20Proxy: "0xb1408f4c245a23c31b98d2c626777d4c0d766caa",
-		ERC721Proxy: "0xe654aac058bfbf9f83fcaee7793311dd82f6ddb4"
-		Exchange: "0x4530c0483a1633c7a1c97d2c53721caff2caaaaf"
-		Forwarder: "0x3983e204b12b3c02fb0638caf2cd406a62e0ead3"
+		ERC721Proxy: "0xe654aac058bfbf9f83fcaee7793311dd82f6ddb4",
+		Exchange: "0x4530c0483a1633c7a1c97d2c53721caff2caaaaf",
+		Forwarder: "0x3983e204b12b3c02fb0638caf2cd406a62e0ead3",
 		OrderValidator: "0x90431a90516ab49af23a0530e04e8c7836e7122f",
 		ZRXToken: "0xff67881f8d12f372d91baae9752eb3631ff0ed00"
 	},
