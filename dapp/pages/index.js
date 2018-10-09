@@ -136,8 +136,8 @@ export default class extends React.Component {
                   {this.state.images[wallet[1]] &&
                     <Link href={`/wallet?wallet=${wallet[1]}&contract=${wallet[2]}&id=${wallet[3]}`}>
                       <div>
-                        <img src={this.state.images[wallet[1]]} style={{ maxHeight: 240, cursor: 'pointer' }} />
-                        {this.state.statuses[wallet[1]]}
+                        <img src={this.state.images[wallet[1]]} style={{ maxHeight: 240, cursor: 'pointer', filter: this.state.statuses[wallet[1]] === '(Backed!)' ? '' : 'opacity(15%) grayscale(100%)' }} />
+                        <div style={{ textAlign: 'center' }}>{this.state.statuses[wallet[1]]}</div>
                       </div>
                     </Link> || <span>(Empty)</span>
                   }
